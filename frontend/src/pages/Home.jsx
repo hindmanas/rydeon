@@ -4,7 +4,7 @@ import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import RideCard from '../components/RideCard';
 import toast from 'react-hot-toast';
 
-const API_BASE = 'https://rydeon-backend.onrender.com/api/rides';
+const API_BASE = 'https://rydeon-backend-xdbl.onrender.com/api/rides';
 
 function Home({ user }) {
   const [rides, setRides] = useState([]);

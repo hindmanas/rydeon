@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE = 'https://rydeon-backend.onrender.com/api/rides';
+const API_BASE = 'https://rydeon-backend-xdbl.onrender.com/api/rides';
 
 function CreateRide({ user }) {
   const navigate = useNavigate();

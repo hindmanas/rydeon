@@ -4,7 +4,7 @@ import RideCard from '../components/RideCard';
 import { db } from '../services/firebase';
 import { collection, query, where, onSnapshot, doc, updateDoc, arrayUnion, addDoc } from 'firebase/firestore';
 
-const API_BASE = 'https://rydeon-backend.onrender.com/api/rides';
+const API_BASE = 'https://rydeon-backend-xdbl.onrender.com/api/rides';
 
 function Dashboard({ user }) {
   const [createdRides, setCreatedRides] = useState([]);
