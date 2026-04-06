@@ -7,8 +7,23 @@ const requestRoutes = require('./routes/requestRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 
 const app = express();
-app.use(cors());
+
+// ✅ CORS configuration (better version)
+app.use(cors({
+    origin: [
+        "http://localhost:5173", // local frontend (vite)
+        "https://your-frontend.vercel.app" // 🔥 replace with your real Vercel URL
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+}));
+
 app.use(express.json());
+
+// ✅ Test route (optional but useful)
+app.get("/", (req, res) => {
+    res.send("Backend is running 🚀");
+});
 
 // Routes
 app.use('/api/rides', rideRoutes);
@@ -16,6 +31,7 @@ app.use('/api/requests', requestRoutes);
 app.use('/api/chat', chatRoutes);
 
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
