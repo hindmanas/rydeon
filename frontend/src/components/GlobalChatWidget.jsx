@@ -82,7 +82,7 @@ export default function GlobalChatWidget({ user }) {
         client = StreamChat.getInstance(apiKey);
         
         // Fetch token securely from our backend
-        const res = await fetch(`https://rydeon-backend.onrender.com/api/chat/token/${user.uid}`);
+        const res = await fetch(`https://rydeon-backend-xdbl.onrender.com/api/chat/token/${user.uid}`);
         if (!res.ok) {
            throw new Error('Failed to fetch chat token');
         }
