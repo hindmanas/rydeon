@@ -12,7 +12,7 @@ const app = express();
 app.use(cors({
     origin: [
         "http://localhost:5173", // local frontend (vite)
-        "https://your-frontend.vercel.app" // 🔥 replace with your real Vercel URL
+        "https://rydeon-bice.vercel.app/" // 🔥 replace with your real Vercel URL
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
