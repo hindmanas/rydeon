@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-300: #6ee7b7;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
+  --color-brand-950: #022c22;
+  --font-sans: 'Outfit', sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-[#0a0a0a] text-slate-100 font-sans antialiased min-h-screen relative overflow-x-hidden;
+    /* Deep space background with subtle neon radial blooms */
+    background-image: 
+       radial-gradient(circle at 0% 0%, rgba(16, 185, 129, 0.08), transparent 400px),
+       radial-gradient(circle at 100% 100%, rgba(13, 148, 136, 0.08), transparent 400px),
+       radial-gradient(circle at 50% 50%, rgba(5, 150, 105, 0.03), transparent 600px);
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  /* Common Premium UI Elements */
+  .btn-primary {
+    @apply px-6 py-3.5 bg-gradient-to-r from-brand-500 hover:from-brand-400 to-teal-600 hover:to-teal-500 text-white font-semibold rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all duration-300;
+  }
+  .btn-primary:hover {
+    @apply shadow-[0_0_30px_rgba(16,185,129,0.5)] -translate-y-1;
+  }
+  .btn-primary:active {
+    @apply translate-y-0 shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-95;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3.5 bg-white/5 backdrop-blur-xl text-slate-200 font-medium rounded-2xl border border-white/10 shadow-sm transition-all duration-300;
+  }
+  .btn-secondary:hover {
+    @apply bg-white/10 border-white/20 text-white -translate-y-1 shadow-lg shadow-black/50;
+  }
+  
+  .card {
+    @apply bg-neutral-900/60 backdrop-blur-2xl rounded-[2rem] p-6 sm:p-8 shadow-2xl border border-white/5 transition-all duration-300 relative overflow-hidden;
+  }
+  .card:hover {
+    @apply shadow-[0_8px_30px_rgb(0,0,0,0.5)] border-white/10;
+  }
+  
+  .input-field {
+    @apply w-full px-5 py-4 rounded-2xl border border-white/10 bg-black/40 text-white placeholder-slate-500 font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 shadow-inner;
+  }
+  
+  /* Select explicitly to avoid bad browser artifacts */
+  select.input-field option {
+    @apply bg-neutral-900 text-white;
+  }
+  
+  .glass-header {
+    @apply bg-black/40 backdrop-blur-3xl border-b border-white/5;
+  }
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Scrollbar customization for a sleek feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #404040;
+}
