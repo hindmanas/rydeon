@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import RideCard from '../components/RideCard';
 import { db } from '../services/firebase';
-import { collection, query, where, onSnapshot, doc, updateDoc, arrayUnion, addDoc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
-const API_BASE = 'https://rydeon-backend-xdbl.onrender.com/api/rides';
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 function Dashboard({ user }) {
   const [createdRides, setCreatedRides] = useState([]);
@@ -14,8 +14,7 @@ function Dashboard({ user }) {
 
   const fetchData = async () => {
     try {
-      // Fetch rides
-      const response = await fetch(`${API_BASE}/user-rides/${user.uid}`);
+      const response = await fetch(`${API_BASE}/rides/user-rides/${user.uid}`);
       if (!response.ok) throw new Error('Failed to fetch rides');
       const data = await response.json();
       setCreatedRides(data.createdRides);
@@ -31,7 +30,6 @@ function Dashboard({ user }) {
     fetchData();
   }, [user.uid]);
 
-  // Real-time listener for pending requests
   useEffect(() => {
     if (!user?.uid) return;
     const q = query(
@@ -53,7 +51,7 @@ function Dashboard({ user }) {
 
   const handleUpdateRequest = async (requestId, status) => {
     try {
-      const response = await fetch(`https://rydeon-backend.onrender.com/api/requests/${requestId}`, {
+      const response = await fetch(`${API_BASE}/requests/${requestId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status, driverId: user.uid })
@@ -62,7 +60,7 @@ function Dashboard({ user }) {
         const errData = await response.json();
         throw new Error(errData.error || 'Failed to update request');
       }
-      fetchData(); // refresh
+      fetchData();
     } catch (error) {
       alert(error.message);
     }
@@ -72,13 +70,12 @@ function Dashboard({ user }) {
     if (!window.confirm("Are you sure you want to cancel this ride?")) return;
     
     try {
-      const response = await fetch(`${API_BASE}/${rideId}`, {
+      const response = await fetch(`${API_BASE}/rides/${rideId}`, {
          method: 'DELETE',
          headers: { 'Content-Type': 'application/json' },
          body: JSON.stringify({ userId: user.uid })
       });
       if (!response.ok) throw new Error('Failed to cancel ride');
-      
       fetchData();
     } catch (error) {
       alert(error.message);
@@ -87,7 +84,7 @@ function Dashboard({ user }) {
 
   const handleFinishRide = async (ride, options) => {
     try {
-      const response = await fetch(`${API_BASE}/finish-ride`, {
+      const response = await fetch(`${API_BASE}/rides/finish-ride`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -108,7 +105,6 @@ function Dashboard({ user }) {
   return (
     <div className="fade-in space-y-16">
       
-      {/* Primary Actions Hero */}
       <div className="grid md:grid-cols-2 gap-8 mt-6">
         <Link to="/" className="card group flex flex-col items-center justify-center p-12 text-center hover:bg-brand-500/10 cursor-pointer">
           <div className="w-20 h-20 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
@@ -132,7 +128,6 @@ function Dashboard({ user }) {
       </div>
 
       <div className="border-t border-slate-800 pt-16 space-y-12">
-        {/* Pending Requests Section */}
         <div>
           <h2 className="text-2xl font-bold text-white mb-2">Pending Requests</h2>
           <p className="text-slate-400 mb-6">Students asking to join your rides.</p>

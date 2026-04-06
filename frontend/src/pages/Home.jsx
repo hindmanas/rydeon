@@ -4,7 +4,7 @@ import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import RideCard from '../components/RideCard';
 import toast from 'react-hot-toast';
 
-const API_BASE = 'https://rydeon-backend-xdbl.onrender.com/api/rides';
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 function Home({ user }) {
   const [rides, setRides] = useState([]);
@@ -23,7 +23,6 @@ function Home({ user }) {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    // Fetch user profile for local state
     const fetchUser = async () => {
       try {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -36,10 +35,9 @@ function Home({ user }) {
     };
     if (user?.uid) fetchUser();
 
-    // Fetch rides via backend (which handles secure gender filtering)
     const fetchRides = async () => {
       try {
-        const url = user?.uid ? `${API_BASE}?uid=${user.uid}` : API_BASE;
+        const url = user?.uid ? `${API_BASE}/rides?uid=${user.uid}` : `${API_BASE}/rides`;
         const response = await fetch(url);
         const data = await response.json();
         if (response.ok) {
@@ -52,14 +50,13 @@ function Home({ user }) {
       }
     };
     
-    // Polling or fetch once
     fetchRides();
 
   }, [user]);
 
   const handleRequestRide = async (ride) => {
     try {
-      const response = await fetch(`https://rydeon-backend.onrender.com/api/requests`, {
+      const response = await fetch(`${API_BASE}/requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -75,10 +72,10 @@ function Home({ user }) {
       if (!response.ok) throw new Error(data.error);
       
       toast.success(data.message || "Request sent successfully!");
-      return true; // Indicate success to the child component
+      return true;
     } catch (error) {
       toast.error("Error: " + error.message);
-      return false; // Indicate failure
+      return false;
     }
   };
 
@@ -120,9 +117,7 @@ function Home({ user }) {
   return (
     <div className="fade-in animate-in slide-in-from-bottom-4 duration-500">
       
-      {/* 1. Dashboard Action Cards */}
       <div className="mb-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Find a Ride Option */}
         <div 
           onClick={() => {
              document.getElementById('ridesList').scrollIntoView({ behavior: 'smooth' });
@@ -142,7 +137,6 @@ function Home({ user }) {
           </div>
         </div>
 
-        {/* Offer a Ride Option */}
         <div 
           onClick={() => setShowOfferModal(true)}
           className="card cursor-pointer group flex items-center p-8 gap-6 border-transparent hover:border-indigo-500/50 bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden relative"
@@ -160,7 +154,6 @@ function Home({ user }) {
         </div>
       </div>
 
-      {/* 2. Rides List */}
       <div id="ridesList" className="mb-8">
         <h2 className="text-2xl font-bold text-white border-b border-slate-800 pb-4 mb-6">Recent Ride Listings</h2>
       </div>
@@ -188,7 +181,6 @@ function Home({ user }) {
         </div>
       )}
 
-      {/* 3. Offer a Ride Modal Content */}
       {showOfferModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4 overflow-y-auto bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
           <div className="w-full max-w-lg card relative shadow-2xl animate-in zoom-in-95 duration-200 my-8">
