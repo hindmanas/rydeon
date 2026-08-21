@@ -185,7 +185,7 @@ function Landing() {
             <span className="w-1.5 h-1.5 rounded-full bg-teal-700"></span>
             THE RYDEON NETWORK
           </div>
-          
+
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-neutral-900 leading-[1.1] tracking-tight">
             Same campus.<br />
             Same route.<br />
@@ -193,7 +193,7 @@ function Landing() {
           </h2>
 
           <p className="text-neutral-500 text-sm sm:text-base leading-relaxed max-w-xl">
-            Rydeon connects verified students already travelling your corridor — PCU to Hinjewadi, Wakad to Hadapsar — so no seat, and no rupee, goes to waste.
+            Rydeon connects verified students already travelling your corridor — PCU to Hinjewadi, PCU to Baner — so no seat, and no rupee, goes to waste.
           </p>
 
           <div className="grid grid-cols-3 gap-4 pt-8 border-t border-neutral-100 max-w-xl">
@@ -529,7 +529,6 @@ function Landing() {
             <h3 className="text-black font-bold mb-4 text-sm">Contact Us</h3>
             <ul className="space-y-2 text-xs text-neutral-500">
               <li><a href="mailto:teamrydeon@gmail.com" className="hover:text-black transition-colors font-semibold">teamrydeon@gmail.com</a></li>
-              <li><a href="tel:+919876543210" className="hover:text-black transition-colors font-semibold">+91 9460994039</a></li>
               <li className="font-semibold text-neutral-400">Pune, Maharashtra</li>
             </ul>
           </div>
