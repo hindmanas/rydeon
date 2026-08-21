@@ -116,9 +116,11 @@ exports.updateRequestStatus = async (req, res) => {
 
                 // Add rider and decrement seat
                 const newRiders = [...(rideData.riders || []), { userId: reqData.requesterId, userName: reqData.requesterName, channelId }];
+                const newRiderIds = [...(rideData.riderIds || []), reqData.requesterId];
                 transaction.update(rideRef, { 
                     seats: rideData.seats - 1,
-                    riders: newRiders
+                    riders: newRiders,
+                    riderIds: newRiderIds
                 });
                 
                 // Simulate sending confirmation SMS to requester

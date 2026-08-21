@@ -26,11 +26,9 @@ function Home({ user }) {
     const fetchUser = async () => {
       try {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-          setUserProfile(userDoc.data());
-        }
+        if (userDoc.exists()) setUserProfile(userDoc.data());
       } catch (err) {
-        console.error("Error fetching profile", err);
+        console.error('Error fetching profile', err);
       }
     };
     if (user?.uid) fetchUser();
@@ -40,18 +38,15 @@ function Home({ user }) {
         const url = user?.uid ? `${API_BASE}/rides?uid=${user.uid}` : `${API_BASE}/rides`;
         const response = await fetch(url);
         const data = await response.json();
-        if (response.ok) {
-          setRides(data);
-        }
+        if (response.ok) setRides(data);
       } catch (err) {
-        console.error("Failed to fetch rides via API", err);
+        console.error('Failed to fetch rides via API', err);
       } finally {
         setLoading(false);
       }
     };
-    
-    fetchRides();
 
+    fetchRides();
   }, [user]);
 
   const handleRequestRide = async (ride) => {
@@ -67,14 +62,14 @@ function Home({ user }) {
           driverName: ride.driverName
         })
       });
-      
+
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
-      
-      toast.success(data.message || "Request sent successfully!");
+
+      toast.success(data.message || 'Request sent successfully!');
       return true;
     } catch (error) {
-      toast.error("Error: " + error.message);
+      toast.error('Error: ' + error.message);
       return false;
     }
   };
@@ -95,171 +90,138 @@ function Home({ user }) {
         status: 'open',
         createdAt: new Date().toISOString()
       };
-      
+
       await addDoc(collection(db, 'rides'), newRide);
-      toast.success("Successfully added ride!");
+      toast.success('Successfully added ride!');
       setShowOfferModal(false);
       setOfferForm({ from: '', to: '', date: '', time: '', seats: 4, price: 0, allowedGender: 'all' });
     } catch (error) {
       console.error(error);
-      toast.error("Failed to offer ride. Please try again.");
+      toast.error('Failed to offer ride. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleChange = (e) => {
-    setOfferForm({ ...offerForm, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setOfferForm({ ...offerForm, [e.target.name]: e.target.value });
 
-  if (loading) return <div className="text-center mt-20 text-slate-400">Loading dashboard...</div>;
+  if (loading) return <div className="mt-20 text-center text-slate-500">Loading rides...</div>;
+
+  const nextRide = rides[0];
 
   return (
-    <div className="fade-in animate-in slide-in-from-bottom-4 duration-500">
-      
-      <div className="mb-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div 
-          onClick={() => {
-             document.getElementById('ridesList').scrollIntoView({ behavior: 'smooth' });
-             toast.success("Scroll down to find a ride!");
-          }}
-          className="card cursor-pointer group flex items-center p-8 gap-6 border-transparent hover:border-brand-500/50 bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden relative"
-        >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-all group-hover:bg-brand-500/20"></div>
-          <div className="w-16 h-16 rounded-2xl bg-brand-500/20 flex items-center justify-center border border-brand-500/30 flex-shrink-0">
-            <svg className="w-8 h-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+    <main className="fade-in space-y-8">
+      <section className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold uppercase text-teal-700">Campus mobility</p>
+              <h1 className="mt-2 max-w-2xl text-3xl font-extrabold leading-tight text-slate-950 sm:text-5xl">Find a reliable seat before your next run.</h1>
+            </div>
+            <button onClick={() => setShowOfferModal(true)} className="btn-primary shrink-0">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v14m7-7H5" /></svg>
+              Offer ride
+            </button>
           </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <p className="text-sm font-bold text-slate-500">Open listings</p>
+              <p className="mt-2 text-3xl font-extrabold text-slate-950">{rides.length}</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <p className="text-sm font-bold text-slate-500">Profile</p>
+              <p className="mt-2 truncate text-xl font-extrabold text-slate-950">{userProfile?.name || user.displayName || 'Ready'}</p>
+            </div>
+            <div className="rounded-2xl bg-teal-50 p-4">
+              <p className="text-sm font-bold text-teal-700">Seat matching</p>
+              <p className="mt-2 text-xl font-extrabold text-teal-900">Live</p>
+            </div>
+          </div>
+        </div>
+
+        <aside className="rounded-3xl border border-slate-200 bg-slate-950 p-6 text-white shadow-sm sm:p-8">
+          <p className="text-sm font-bold uppercase text-teal-300">Quick actions</p>
+          <div className="mt-6 grid gap-3">
+            <button onClick={() => document.getElementById('ridesList')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center justify-between rounded-2xl bg-white/10 p-4 text-left transition-colors hover:bg-white/15">
+              <span>
+                <span className="block font-extrabold">Browse rides</span>
+                <span className="mt-1 block text-sm text-slate-300">Compare timings and seats.</span>
+              </span>
+              <span className="text-xl">+</span>
+            </button>
+            <button onClick={() => setShowOfferModal(true)} className="flex items-center justify-between rounded-2xl bg-teal-500 p-4 text-left text-slate-950 transition-colors hover:bg-teal-400">
+              <span>
+                <span className="block font-extrabold">Post a route</span>
+                <span className="mt-1 block text-sm font-semibold text-teal-950/70">Share empty seats.</span>
+              </span>
+              <span className="text-xl">+</span>
+            </button>
+          </div>
+          {nextRide && <p className="mt-6 text-sm text-slate-300">Next available: <span className="font-bold text-white">{nextRide.pickup}</span> to <span className="font-bold text-white">{nextRide.dropoff}</span></p>}
+        </aside>
+      </section>
+
+      <section id="ridesList">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-4 border-b border-slate-200 pb-4">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-2">Find a Ride</h2>
-            <p className="text-slate-400 text-sm">Browse available trips and join fellow students heading your way.</p>
+            <h2 className="text-2xl font-extrabold text-slate-950">Recent ride listings</h2>
+            <p className="mt-1 text-sm font-medium text-slate-500">Clean, scannable cards for booking without the heavy neon look.</p>
           </div>
+          <span className="rounded-full bg-white px-3 py-1.5 text-sm font-bold text-slate-600 shadow-sm">{rides.length} available</span>
         </div>
 
-        <div 
-          onClick={() => setShowOfferModal(true)}
-          className="card cursor-pointer group flex items-center p-8 gap-6 border-transparent hover:border-indigo-500/50 bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden relative"
-        >
-          <div className="absolute top-0 left-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -ml-10 -mt-10 transition-all group-hover:bg-indigo-500/20"></div>
-          <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30 flex-shrink-0">
-            <svg className="w-8 h-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+        {rides.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
+            <h3 className="text-xl font-extrabold text-slate-950">No rides available</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">Offer the first ride and it will appear here as a polished listing card.</p>
+            <button onClick={() => setShowOfferModal(true)} className="btn-primary mt-6">Offer a ride</button>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold text-white mb-2">Offer a Ride</h2>
-            <p className="text-slate-400 text-sm">Driving somewhere? Share your empty seats and split the travel costs.</p>
+        ) : (
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {rides.map(ride => (
+              <RideCard key={ride.id} ride={ride} currentUserId={user.uid} onRequest={handleRequestRide} />
+            ))}
           </div>
-        </div>
-      </div>
-
-      <div id="ridesList" className="mb-8">
-        <h2 className="text-2xl font-bold text-white border-b border-slate-800 pb-4 mb-6">Recent Ride Listings</h2>
-      </div>
-
-      {rides.length === 0 ? (
-        <div className="text-center py-20 bg-slate-800/30 rounded-3xl border border-slate-700/50 backdrop-blur-sm">
-          <div className="w-16 h-16 bg-brand-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-500/20 shadow-[0_0_15px_rgba(20,184,166,0.2)]">
-             <svg className="w-8 h-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-             </svg>
-          </div>
-          <h3 className="text-lg font-medium text-white">No rides available</h3>
-          <p className="text-slate-400 mt-1">Be the first to offer a ride today!</p>
-        </div>
-      ) : (
-        <div className="flex flex-col max-w-2xl mx-auto gap-5 pb-12">
-          {rides.map(ride => (
-              <RideCard 
-                key={ride.id} 
-                ride={ride} 
-                currentUserId={user.uid}
-                onRequest={handleRequestRide}
-              />
-          ))}
-        </div>
-      )}
+        )}
+      </section>
 
       {showOfferModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 overflow-y-auto bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="w-full max-w-lg card relative shadow-2xl animate-in zoom-in-95 duration-200 my-8">
-            <button 
-              onClick={() => setShowOfferModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            
-            <h2 className="text-2xl font-bold text-white mb-2">Offer a Ride</h2>
-            <p className="text-slate-400 text-sm mb-6 pb-4 border-b border-slate-700">Fill out the details to share your journey.</p>
-            
-            <form onSubmit={handleOfferSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">From (Start)</label>
-                  <input type="text" name="from" required value={offerForm.from} onChange={handleChange} placeholder="Hostel Block A" className="input-field py-2" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">To (Destination)</label>
-                  <input type="text" name="to" required value={offerForm.to} onChange={handleChange} placeholder="City Center" className="input-field py-2" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Date</label>
-                  <input type="date" name="date" required value={offerForm.date} onChange={handleChange} className="input-field py-2 dark:[color-scheme:dark]" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Time</label>
-                  <input type="time" name="time" required value={offerForm.time} onChange={handleChange} className="input-field py-2 dark:[color-scheme:dark]" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Seats Available</label>
-                  <input type="number" name="seats" min="1" max="10" required value={offerForm.seats} onChange={handleChange} className="input-field py-2" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Price (₹)</label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 font-medium">₹</span>
-                    <input type="number" name="price" min="0" required value={offerForm.price} onChange={handleChange} className="input-field py-2 pl-8" placeholder="150" />
-                  </div>
-                </div>
-              </div>
-
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/50 px-4 py-8 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
+            <div className="mb-6 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Allowed Gender</label>
-                <select 
-                  name="allowedGender" 
-                  value={offerForm.allowedGender} 
-                  onChange={handleChange} 
-                  className="input-field py-2 text-slate-300"
-                >
-                  <option value="all">All Genders</option>
-                  <option value="female">Only Females</option>
-                  <option value="male">Only Males</option>
-                </select>
+                <h2 className="text-2xl font-extrabold text-slate-950">Offer a ride</h2>
+                <p className="mt-1 text-sm text-slate-500">Add the route, timing, and available seats.</p>
               </div>
+              <button onClick={() => setShowOfferModal(false)} className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-500 hover:text-slate-950" aria-label="Close">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
 
-              <div className="pt-4 flex gap-3">
-                <button type="button" onClick={() => setShowOfferModal(false)} className="flex-1 btn-secondary">
-                  Cancel
-                </button>
-                <button type="submit" disabled={submitting} className="flex-1 btn-primary">
-                  {submitting ? 'Posting...' : 'Post Ride'}
-                </button>
+            <form onSubmit={handleOfferSubmit} className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block text-sm font-bold text-slate-700">From<input type="text" name="from" required value={offerForm.from} onChange={handleChange} placeholder="C block" className="input-field mt-1" /></label>
+                <label className="block text-sm font-bold text-slate-700">To<input type="text" name="to" required value={offerForm.to} onChange={handleChange} placeholder="Pune junction" className="input-field mt-1" /></label>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block text-sm font-bold text-slate-700">Date<input type="date" name="date" required value={offerForm.date} onChange={handleChange} className="input-field mt-1" /></label>
+                <label className="block text-sm font-bold text-slate-700">Time<input type="time" name="time" required value={offerForm.time} onChange={handleChange} className="input-field mt-1" /></label>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <label className="block text-sm font-bold text-slate-700">Seats<input type="number" name="seats" min="1" max="10" required value={offerForm.seats} onChange={handleChange} className="input-field mt-1" /></label>
+                <label className="block text-sm font-bold text-slate-700">Price<input type="number" name="price" min="0" required value={offerForm.price} onChange={handleChange} className="input-field mt-1" placeholder="40" /></label>
+                <label className="block text-sm font-bold text-slate-700">Riders<select name="allowedGender" value={offerForm.allowedGender} onChange={handleChange} className="input-field mt-1"><option value="all">All</option><option value="female">Female only</option><option value="male">Male only</option></select></label>
+              </div>
+              <div className="flex gap-3 pt-3">
+                <button type="button" onClick={() => setShowOfferModal(false)} className="flex-1 btn-secondary">Cancel</button>
+                <button type="submit" disabled={submitting} className="flex-1 btn-primary">{submitting ? 'Posting...' : 'Post ride'}</button>
               </div>
             </form>
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }
 

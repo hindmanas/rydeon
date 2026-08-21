@@ -8,16 +8,15 @@ function RideCard({ ride, currentUserId, onRequest, onCancel, onFinish }) {
   const isDriver = ride.driverId === currentUserId;
   const hasJoined = ride.riders?.some(r => r.userId === currentUserId);
   const isFull = ride.seats <= 0;
+  const dateText = new Date(ride.time).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
 
   const handleRequest = async () => {
     setLoading(true);
     const success = await onRequest(ride);
-    if (success) {
-      setLocalRequested(true);
-    }
+    if (success) setLocalRequested(true);
     setLoading(false);
   };
-  
+
   const handleCancelClick = async () => {
     setLoading(true);
     await onCancel(ride.id);
@@ -25,220 +24,144 @@ function RideCard({ ride, currentUserId, onRequest, onCancel, onFinish }) {
   };
 
   return (
-    <div className="card fade-in flex flex-col justify-between hover:-translate-y-1 bg-slate-800/20 backdrop-blur-xl border-slate-700/30">
+    <article className="card fade-in flex min-h-[360px] flex-col justify-between">
       <div>
-        <div className="flex justify-between items-start mb-4">
+        <div className="mb-5 flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 font-bold border border-slate-700 shadow-sm">
+            <div className="grid h-11 w-11 place-items-center rounded-xl bg-slate-100 text-base font-extrabold text-slate-700">
               {ride.driverName.charAt(0)}
             </div>
-            <div>
-              <h3 className="font-semibold text-white">{ride.driverName}</h3>
-              <p className="text-[10px] text-brand-400 font-semibold uppercase tracking-wider bg-brand-500/10 border border-brand-500/20 inline-block px-2 py-0.5 rounded-full mt-1">Driver</p>
+            <div className="min-w-0">
+              <h3 className="truncate text-base font-extrabold text-slate-950">{ride.driverName}</h3>
+              <p className="mt-1 inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-bold uppercase text-teal-700">Driver</p>
             </div>
           </div>
-          <div className="text-right">
-            <p className="text-lg font-bold text-white">₹{ride.price}</p>
-            <p className="text-xs text-brand-400 font-medium">per person</p>
+          <div className="rounded-xl bg-slate-950 px-3 py-2 text-right text-white">
+            <p className="text-lg font-extrabold">Rs. {ride.price}</p>
+            <p className="text-xs font-semibold text-slate-300">per seat</p>
           </div>
         </div>
 
-        <div className="space-y-4 mb-6 relative pl-2">
-          <div className="absolute left-4 top-3 bottom-3 w-0.5 bg-slate-700/50"></div>
-          
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="w-5 h-5 rounded-full bg-slate-900 border-4 border-brand-500 shadow-[0_0_10px_rgba(20,184,166,0.3)]"></div>
-            <div>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Pickup</p>
-              <p className="font-medium text-white">{ride.pickup}</p>
+        <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div className="relative grid gap-5 pl-7">
+            <div className="absolute left-2.5 top-3 h-[calc(100%-24px)] w-px bg-slate-300" />
+            <div className="relative">
+              <span className="absolute -left-7 top-1 h-5 w-5 rounded-full border-4 border-white bg-teal-600 shadow-sm" />
+              <p className="text-xs font-bold uppercase text-slate-500">Pickup</p>
+              <p className="mt-1 text-sm font-extrabold text-slate-950">{ride.pickup}</p>
             </div>
-          </div>
-          
-          <div className="flex items-center gap-4 relative z-10">
-             <div className="w-5 h-5 rounded-full bg-indigo-500 border-4 border-slate-900 shadow-[0_0_10px_rgba(79,70,229,0.3)]"></div>
-            <div>
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Dropoff</p>
-              <p className="font-medium text-white">{ride.dropoff}</p>
+            <div className="relative">
+              <span className="absolute -left-7 top-1 h-5 w-5 rounded-full border-4 border-white bg-indigo-600 shadow-sm" />
+              <p className="text-xs font-bold uppercase text-slate-500">Dropoff</p>
+              <p className="mt-1 text-sm font-extrabold text-slate-950">{ride.dropoff}</p>
             </div>
           </div>
         </div>
 
-        <div className="flex justify-between items-center text-sm text-slate-300 bg-slate-800/50 p-3 rounded-xl mb-4 border border-slate-700/50 backdrop-blur-sm">
-          <div className="flex items-center gap-1.5 focus:outline-none">
-            <svg className="w-4 h-4 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span className="font-medium">{new Date(ride.time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
+        <div className="mb-5 grid grid-cols-2 gap-3 text-sm">
+          <div className="rounded-xl border border-slate-200 bg-white p-3">
+            <p className="text-xs font-bold uppercase text-slate-500">Leaving</p>
+            <p className="mt-1 font-bold text-slate-950">{dateText}</p>
           </div>
-          <div className="flex items-center gap-1.5 text-emerald-400 font-medium">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            <span>{ride.seats} seats</span>
+          <div className="rounded-xl border border-slate-200 bg-white p-3">
+            <p className="text-xs font-bold uppercase text-slate-500">Seats</p>
+            <p className="mt-1 font-bold text-slate-950">{ride.seats} available</p>
           </div>
         </div>
       </div>
 
-      <div className="mt-2">
+      <div>
         {isDriver ? (
-           <div className="space-y-3">
-             <div className="flex gap-2">
-                 <button 
-                   onClick={handleCancelClick} 
-                   disabled={loading}
-                   className="flex-1 py-2.5 rounded-xl border border-red-500/20 text-red-400 font-semibold bg-red-500/10 hover:bg-red-500/20 transition-all shadow-sm"
-                 >
-                   {loading ? 'Canceling...' : 'Cancel'}
-                 </button>
-                 {ride.riders && ride.riders.length > 0 && onFinish && (
-                     <button 
-                       onClick={() => setShowFinishModal(true)}
-                       className="flex-1 py-2.5 rounded-xl border border-blue-500/20 text-blue-400 font-semibold bg-blue-500/10 hover:bg-blue-500/20 transition-all shadow-sm"
-                     >
-                       Finish Ride
-                     </button>
-                 )}
-             </div>
-             {ride.riders && ride.riders.length > 0 && (
-               <div className="mt-4 border-t border-slate-700/50 pt-4">
-                 <h4 className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-3">Confirmed Riders</h4>
-                 <div className="space-y-2">
-                   {ride.riders.map(rider => (
-                     <div key={rider.userId} className="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-lg border border-slate-700/30 backdrop-blur-sm">
-                        <div className="flex items-center gap-2">
-                           <div className="w-7 h-7 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">
-                             {rider.userName.charAt(0)}
-                           </div>
-                           <span className="text-sm font-medium text-slate-200">{rider.userName}</span>
-                        </div>
-                        {rider.channelId && (
-                           <button
-                             title="Open Chat widget to see messages"
-                             onClick={() => window.dispatchEvent(new CustomEvent('openchat', { detail: { channelId: rider.channelId, otherUser: { id: rider.userId, name: rider.userName } } }))}
-                             className="text-xs py-1 px-3 bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 border border-brand-500/20 rounded-md transition-colors"
-                           >
-                             Chat
-                           </button>
-                        )}
-                     </div>
-                   ))}
-                 </div>
-               </div>
-             )}
-           </div>
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <button onClick={handleCancelClick} disabled={loading} className="flex-1 rounded-xl border border-rose-200 bg-rose-50 py-3 text-sm font-bold text-rose-700 transition-colors hover:bg-rose-100">
+                {loading ? 'Canceling...' : 'Cancel'}
+              </button>
+              {ride.riders && ride.riders.length > 0 && onFinish && (
+                <button onClick={() => setShowFinishModal(true)} className="flex-1 rounded-xl border border-blue-200 bg-blue-50 py-3 text-sm font-bold text-blue-700 transition-colors hover:bg-blue-100">
+                  Finish
+                </button>
+              )}
+            </div>
+            {ride.riders && ride.riders.length > 0 && (
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <h4 className="mb-2 text-xs font-bold uppercase text-slate-500">Confirmed riders</h4>
+                <div className="space-y-2">
+                  {ride.riders.map(rider => (
+                    <div key={rider.userId} className="flex items-center justify-between rounded-xl bg-white p-2.5">
+                      <span className="truncate text-sm font-bold text-slate-800">{rider.userName}</span>
+                      {rider.channelId && (
+                        <button onClick={() => window.dispatchEvent(new CustomEvent('openchat', { detail: { channelId: rider.channelId, otherUser: { id: rider.userId, name: rider.userName } } }))} className="rounded-lg bg-teal-50 px-3 py-1.5 text-xs font-bold text-teal-700">
+                          Chat
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         ) : hasJoined ? (
-      <div className="mt-2 text-center rounded-xl overflow-hidden border border-emerald-500/20 bg-emerald-500/10 flex flex-col">
-           <div className="py-2.5 text-emerald-400 font-semibold cursor-default border-b border-emerald-500/10">
-             Joined successfully 🎉
-           </div>
-           <div className="flex w-full">
-           {(() => {
-             const riderInfo = ride.riders?.find(r => r.userId === currentUserId);
-             return riderInfo?.channelId ? (
-                <button 
-                   onClick={() => window.dispatchEvent(new CustomEvent('openchat', { detail: { channelId: riderInfo.channelId, otherUser: { id: ride.driverId, name: ride.driverName } } }))}
-                   className="flex-1 py-2 bg-emerald-600/20 text-emerald-300 font-medium z-10 hover:bg-emerald-600/40 transition-colors text-center border-r border-emerald-600/20"
-                >
-                   Chat 💬
-                </button>
-             ) : null;
-           })()}
-             {onFinish && (
-                <button 
-                   onClick={() => setShowFinishModal(true)}
-                   className="flex-1 py-2 bg-blue-600/20 text-blue-300 font-medium z-10 hover:bg-blue-600/40 transition-colors text-center"
-                >
-                   Finish Ride ✨
-                </button>
-             )}
-           </div>
-      </div>
+          <div className="overflow-hidden rounded-xl border border-teal-200 bg-teal-50">
+            <div className="px-4 py-3 text-center text-sm font-bold text-teal-800">Joined successfully</div>
+            <div className="flex border-t border-teal-100">
+              {(() => {
+                const riderInfo = ride.riders?.find(r => r.userId === currentUserId);
+                return riderInfo?.channelId ? (
+                  <button onClick={() => window.dispatchEvent(new CustomEvent('openchat', { detail: { channelId: riderInfo.channelId, otherUser: { id: ride.driverId, name: ride.driverName } } }))} className="flex-1 px-4 py-2.5 text-sm font-bold text-teal-800 hover:bg-teal-100">
+                    Chat
+                  </button>
+                ) : null;
+              })()}
+              {onFinish && <button onClick={() => setShowFinishModal(true)} className="flex-1 px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50">Finish</button>}
+            </div>
+          </div>
         ) : localRequested ? (
-           <button disabled className="w-full py-2.5 rounded-xl border border-indigo-500/20 text-indigo-400 font-semibold bg-indigo-500/10 cursor-not-allowed">
-             Request Pending ⏳
-           </button>
+          <button disabled className="w-full rounded-xl border border-indigo-200 bg-indigo-50 py-3 text-sm font-bold text-indigo-700">Request pending</button>
         ) : isFull ? (
-           <button disabled className="w-full py-2.5 rounded-xl border border-slate-700 text-slate-500 font-semibold bg-slate-800/50 cursor-not-allowed">
-             Ride Full
-           </button>
+          <button disabled className="w-full rounded-xl border border-slate-200 bg-slate-100 py-3 text-sm font-bold text-slate-400">Ride full</button>
         ) : (
-           <button 
-             onClick={handleRequest}
-             disabled={loading}
-             className="w-full btn-primary"
-           >
-             {loading ? 'Booking...' : 'Book Now'}
-           </button>
+          <button onClick={handleRequest} disabled={loading} className="w-full btn-primary">
+            {loading ? 'Booking...' : 'Book seat'}
+          </button>
         )}
       </div>
 
-      {/* Finish Ride Modal */}
       {showFinishModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowFinishModal(false)}>
-          <div 
-            className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl fade-in"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-white mb-4">Complete Ride</h3>
-              
-              {!isDriver && (
-                <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-center">
-                  <p className="text-sm text-slate-300 mb-1">Please pay the driver</p>
-                  <p className="text-4xl font-black text-emerald-400 mb-1">₹{ride.price}</p>
-                  <p className="text-xs text-brand-400">(Hand over cash or UPI)</p>
-                </div>
-              )}
-
-              <div className="mb-6">
-                <p className="text-slate-300 mb-3 text-sm">
-                  {isDriver ? "Are you satisfied with the passengers?" : "Are you satisfied with the driver?"}
-                </p>
-                <label className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl cursor-pointer hover:bg-slate-800 transition-colors border border-slate-700">
-                  <div className="relative flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="peer w-5 h-5 opacity-0 absolute"
-                      checked={isSatisfied}
-                      onChange={(e) => setIsSatisfied(e.target.checked)}
-                    />
-                    <div className="w-5 h-5 rounded flex items-center justify-center bg-slate-700 peer-checked:bg-brand-500 border border-slate-600 peer-checked:border-brand-500 transition-colors">
-                      <svg className="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                  <span className="text-white font-medium select-none text-sm">Yes, overall satisfied.</span>
-                </label>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" onClick={() => setShowFinishModal(false)}>
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-extrabold text-slate-950">Complete ride</h3>
+            {!isDriver && (
+              <div className="my-5 rounded-2xl border border-teal-200 bg-teal-50 p-4 text-center">
+                <p className="text-sm font-medium text-slate-600">Please pay the driver</p>
+                <p className="mt-1 text-4xl font-extrabold text-teal-700">Rs. {ride.price}</p>
               </div>
-
-              <div className="flex gap-3">
-                <button 
-                  onClick={() => setShowFinishModal(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-slate-600 text-slate-300 font-semibold hover:bg-slate-800 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={async () => {
-                    if (onFinish) {
-                      setLoading(true);
-                      await onFinish(ride, { satisfied: isSatisfied });
-                      setShowFinishModal(false);
-                      setLoading(false);
-                    }
-                  }}
-                  disabled={loading}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 text-white font-black hover:shadow-lg hover:shadow-brand-500/20 transition-all active:scale-95 text-center"
-                >
-                  {loading ? 'Submitting...' : 'Complete'}
-                </button>
-              </div>
+            )}
+            <label className="my-5 flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <input type="checkbox" className="h-5 w-5 accent-teal-700" checked={isSatisfied} onChange={(e) => setIsSatisfied(e.target.checked)} />
+              <span className="text-sm font-bold text-slate-800">Overall satisfied with this ride</span>
+            </label>
+            <div className="flex gap-3">
+              <button onClick={() => setShowFinishModal(false)} className="flex-1 btn-secondary">Cancel</button>
+              <button
+                onClick={async () => {
+                  if (onFinish) {
+                    setLoading(true);
+                    await onFinish(ride, { satisfied: isSatisfied });
+                    setShowFinishModal(false);
+                    setLoading(false);
+                  }
+                }}
+                disabled={loading}
+                className="flex-1 btn-primary"
+              >
+                {loading ? 'Submitting...' : 'Complete'}
+              </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </article>
   );
 }
 

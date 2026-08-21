@@ -12,7 +12,7 @@ const app = express();
 app.use(cors({
     origin: [
         "http://localhost:5173", // local frontend (vite)
-        "https://rydeon-bice.vercel.app" // 🔥 replace with your real Vercel URL
+        "https://rydeon-bice.vercel.app" 
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
@@ -20,7 +20,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// ✅ Test route (optional but useful)
 app.get("/", (req, res) => {
     res.send("Backend is running 🚀");
 });

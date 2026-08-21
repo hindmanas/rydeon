@@ -87,9 +87,11 @@ exports.joinRide = async (req, res) => {
             }
 
             const newRiders = [...(data.riders || []), { userId, userName }];
+            const newRiderIds = [...(data.riderIds || []), userId];
             transaction.update(rideRef, { 
                 seats: data.seats - 1,
-                riders: newRiders
+                riders: newRiders,
+                riderIds: newRiderIds
             });
         });
 
@@ -139,13 +141,19 @@ exports.getUserRides = async (req, res) => {
         const createdSnapshot = await db.collection('rides').where('driverId', '==', uid).get();
         const createdRides = createdSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        // For rides joined by user, we might need a different structure or query if array contains objects
-        // In Firestore, querying array of objects is tricky. Usually we store just userIds in an array field "riderIds" 
-        // Let's get all rides and filter for now (not optimal for large scale, but works for MVP)
-        const allRidesSnapshot = await db.collection('rides').get();
-        const joinedRides = allRidesSnapshot.docs
-            .map(doc => ({ id: doc.id, ...doc.data() }))
-            .filter(ride => ride.riders && ride.riders.some(r => r.userId === uid));
+        // Optimized query checking if the user is in the riderIds array
+        let joinedRides = [];
+        const joinedSnapshot = await db.collection('rides').where('riderIds', 'array-contains', uid).get();
+        
+        if (!joinedSnapshot.empty) {
+            joinedRides = joinedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        } else {
+            // Fast fallback: only fetch the last 100 rides to prevent database scanning lag
+            const legacySnapshot = await db.collection('rides').limit(100).get();
+            joinedRides = legacySnapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .filter(ride => ride.riders && ride.riders.some(r => r.userId === uid));
+        }
 
         res.status(200).json({ createdRides, joinedRides });
     } catch (error) {

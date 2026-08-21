@@ -67,10 +67,10 @@ function App() {
   return (
     <>
       <Toaster position="top-right" toastOptions={{
-        className: 'bg-black border border-white/10 text-white font-medium shadow-2xl',
+        className: 'bg-white border border-slate-200 text-slate-950 font-medium shadow-xl',
         style: {
-          background: '#0a0a0a',
-          color: '#fff',
+          background: '#ffffff',
+          color: '#0f172a',
           borderRadius: '16px',
         },
       }} />
@@ -80,19 +80,45 @@ function App() {
       {/* Hide Chat during onboarding */}
       {user && <Routes><Route path="/onboarding" element={null} /> <Route path="*" element={<GlobalChatWidget user={user} />} /></Routes>}
 
-      <div className="container mx-auto px-4 py-8 relative z-10 w-full overflow-hidden">
-        <Routes>
-          <Route path="/" element={user ? <RequireOnboarding user={user}><Home user={user} /></RequireOnboarding> : <Landing />} />
-          
-          <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-          <Route path="/signup" element={user ? <Navigate to="/" /> : <Signup />} />
-          <Route path="/onboarding" element={user ? <Onboarding user={user} /> : <Navigate to="/login" />} />
-          
-          <Route path="/create" element={user ? <RequireOnboarding user={user}><CreateRide user={user} /></RequireOnboarding> : <Navigate to="/login" />} />
-          <Route path="/dashboard" element={user ? <RequireOnboarding user={user}><Dashboard user={user} /></RequireOnboarding> : <Navigate to="/login" />} />
-          <Route path="/profile" element={user ? <RequireOnboarding user={user}><Profile user={user} /></RequireOnboarding> : <Navigate to="/login" />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={user ? (
+          <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
+            <RequireOnboarding user={user}><Home user={user} /></RequireOnboarding>
+          </div>
+        ) : <Landing />} />
+        
+        <Route path="/login" element={
+          <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
+            {user ? <Navigate to="/" /> : <Login />}
+          </div>
+        } />
+        <Route path="/signup" element={
+          <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
+            {user ? <Navigate to="/" /> : <Signup />}
+          </div>
+        } />
+        <Route path="/onboarding" element={
+          <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
+            {user ? <Onboarding user={user} /> : <Navigate to="/login" />}
+          </div>
+        } />
+        
+        <Route path="/create" element={
+          <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
+            {user ? <RequireOnboarding user={user}><CreateRide user={user} /></RequireOnboarding> : <Navigate to="/login" />}
+          </div>
+        } />
+        <Route path="/dashboard" element={
+          <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
+            {user ? <RequireOnboarding user={user}><Dashboard user={user} /></RequireOnboarding> : <Navigate to="/login" />}
+          </div>
+        } />
+        <Route path="/profile" element={
+          <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
+            {user ? <RequireOnboarding user={user}><Profile user={user} /></RequireOnboarding> : <Navigate to="/login" />}
+          </div>
+        } />
+      </Routes>
     </>
   );
 }

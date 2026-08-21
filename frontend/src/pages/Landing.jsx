@@ -1,15 +1,44 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
+// Import local image assets
+import studentsRide from '../assets/students_ride.jpg';
+import studentsBook from '../assets/students_book.jpg';
+import phoneMock from '../assets/phone_mock.jpg';
+import ThreeDModel from '../components/ThreeDModel';
 
 function Landing() {
+  const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState(null);
+  const [activeTab, setActiveTab] = useState('ride'); // 'ride' or 'offer'
+  const [pickup, setPickup] = useState('');
+  const [destination, setDestination] = useState('');
+
+  // Safe rides ticker
+  const [safeRidesCount, setSafeRidesCount] = useState(15482);
+
+  useEffect(() => {
+    // Dynamic ticker for safe rides
+    const interval = setInterval(() => {
+      setSafeRidesCount(prev => prev + Math.floor(Math.random() * 2) + 1);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleBookingSubmit = (e) => {
+    e.preventDefault();
+    if (!pickup || !destination) return;
+    // Redirect to signup page passing inputs to auto-fill search
+    navigate('/signup', { state: { pickup, destination, mode: activeTab } });
+  };
+
   const demoRides = [
     {
       id: 1,
       driver: "Rakshan Parashar",
       origin: "Admin Block",
       destination: "Pune Railway Station",
-      time: "12:30 PM, 15th February",
+      time: "12:30 PM, 15th Feb",
       seats: 2,
       price: "20"
     },
@@ -18,7 +47,7 @@ function Landing() {
       driver: "Jatin Khatri",
       origin: "Exit Gate 1",
       destination: "Akurdi Bus Stop",
-      time: "4:30 PM, 23rd march",
+      time: "4:30 PM, 23rd March",
       seats: 3,
       price: "45"
     },
@@ -49,67 +78,349 @@ function Landing() {
   ];
 
   return (
-    <div className="font-sans text-slate-100 min-h-screen bg-slate-900 overflow-x-hidden">
-      {/* Navbar for Landing */}
-      <nav className="bg-slate-900/40 backdrop-blur-md sticky top-0 z-50 border-b border-white/10 flex justify-between items-center px-8 py-4">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-brand-500/20 ring-1 ring-white/10 group-hover:scale-110 transition-transform duration-300">
-            <svg className="w-6 h-6 text-white drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+    <div className="font-sans text-neutral-900 min-h-screen bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] overflow-x-hidden relative">
+      {/* Fixed Topbar / Navbar */}
+      <nav className="border-b border-neutral-100 bg-white/90 backdrop-blur-md fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 py-4 sm:px-8 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="grid h-8 w-8 place-items-center rounded-lg bg-black text-white shadow-sm font-black">
+            R
           </div>
-          <span className="text-2xl font-black text-white tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">RYDEON</span>
+          <span className="text-xl font-bold tracking-tight text-black">Rydeon</span>
         </div>
         <div>
-          <Link to="/login" className="px-5 py-2.5 rounded-full bg-slate-800 text-white font-medium hover:bg-slate-700 transition-colors border border-white/10 shadow-lg hover:-translate-y-0.5 transform duration-200">
-            Sign In
+          <Link to="/login" className="inline-flex items-center justify-center rounded-lg border border-neutral-200 bg-white px-4 py-2 text-sm font-bold text-neutral-700 shadow-sm transition-all duration-200 hover:border-neutral-300 hover:text-black">
+            Log in
           </Link>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="fade-in relative overflow-hidden pt-32 pb-40 flex flex-col items-center justify-center text-center px-4">
-        <span className="px-4 py-1.5 rounded-full bg-brand-500/10 text-brand-400 font-semibold text-sm mb-6 border border-brand-500/20 inline-block shadow-[0_0_15px_rgba(20,184,166,0.2)]">
-          Exclusive for University Students 🎓
-        </span>
-        <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight max-w-4xl mb-6 leading-tight drop-shadow-2xl">
-          Find a ride. <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-indigo-400 drop-shadow-lg">Split the cost.</span> Make a friend.
-        </h1>
-        <p className="text-xl text-slate-400 max-w-2xl mb-10">
-          The safest, easiest, and most affordable way to travel around campus and the city with verified student peers.
-        </p>
-        <Link to="/signup" className="group relative inline-flex items-center justify-center px-10 py-5 font-black text-white transition-all duration-300 bg-brand-600 rounded-2xl hover:bg-brand-500 hover:shadow-[0_20px_40px_rgba(20,184,166,0.4)] hover:-translate-y-2 active:scale-95 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-600 bg-[length:200%_100%] animate-gradient-x opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <span className="relative z-10 flex items-center">
-            Get Started
-            <svg className="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </span>
-        </Link>
+      {/* Hero Section - Two Column Layout */}
+      <section className="relative bg-transparent pt-24 pb-12 md:pt-32 md:pb-20 px-4 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        {/* Left Column: Uber-style booking widget */}
+        <div className="lg:col-span-5 flex flex-col justify-center z-10">
+          {/* Ticker Banner */}
+          <div className="inline-flex items-center gap-2 self-start mb-6 px-3 py-1 bg-white border border-neutral-200 text-neutral-800 rounded-full text-xs font-semibold shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <span>🛡️ {safeRidesCount.toLocaleString()} campus rides safely completed</span>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-neutral-200 shadow-xl overflow-hidden">
+            {/* Widget Tabs */}
+            <div className="flex border-b border-neutral-100 bg-neutral-50">
+              <button
+                type="button"
+                onClick={() => setActiveTab('ride')}
+                className={`flex-1 py-4 text-sm font-bold transition-colors flex items-center justify-center gap-2 ${activeTab === 'ride' ? 'bg-white border-b-2 border-black text-black' : 'text-neutral-500 hover:text-black'}`}
+              >
+                🚗 Find Ride
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('offer')}
+                className={`flex-1 py-4 text-sm font-bold transition-colors flex items-center justify-center gap-2 ${activeTab === 'offer' ? 'bg-white border-b-2 border-black text-black' : 'text-neutral-500 hover:text-black'}`}
+              >
+                ⚡ Offer Ride
+              </button>
+            </div>
+
+            {/* Widget Form */}
+            <form onSubmit={handleBookingSubmit} className="p-6 space-y-5">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-black leading-tight">
+                {activeTab === 'ride' ? 'Go anywhere with peers' : 'Share your ride and save'}
+              </h1>
+              <p className="text-sm text-neutral-500">
+                {activeTab === 'ride' ? 'Enter your route to find verified student drivers heading your way.' : 'Post your empty seats and split travel expenses with peers.'}
+              </p>
+
+              {/* Connecting line layout for locations */}
+              <div className="relative flex gap-4 mt-2">
+                {/* Visual Line connector */}
+                <div className="flex flex-col items-center py-3.5">
+                  <div className="w-2.5 h-2.5 rounded-full border-2 border-black bg-white shrink-0"></div>
+                  <div className="w-0.5 h-12 bg-neutral-200 my-1"></div>
+                  <div className="w-2.5 h-2.5 bg-black shrink-0"></div>
+                </div>
+
+                {/* Inputs */}
+                <div className="flex-1 space-y-3">
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Enter pickup location..."
+                      value={pickup}
+                      onChange={(e) => setPickup(e.target.value)}
+                      className="w-full bg-neutral-50 border border-neutral-200/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-black focus:bg-white transition"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Enter destination..."
+                      value={destination}
+                      onChange={(e) => setDestination(e.target.value)}
+                      className="w-full bg-neutral-50 border border-neutral-200/80 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-black focus:bg-white transition"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-black text-white hover:bg-neutral-800 py-3.5 px-6 rounded-lg text-sm font-bold transition duration-200 active:scale-[0.99] flex items-center justify-center gap-2"
+              >
+                <span>{activeTab === 'ride' ? 'Search rides' : 'Offer a ride'}</span>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Right Column: Text & Network Stats */}
+        <div className="lg:col-span-7 flex flex-col justify-center lg:pl-12 z-10 space-y-6">
+          <div className="flex items-center gap-2 text-teal-700 font-bold uppercase tracking-wider text-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-700"></span>
+            THE RYDEON NETWORK
+          </div>
+          
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-neutral-900 leading-[1.1] tracking-tight">
+            Same campus.<br />
+            Same route.<br />
+            One ride.
+          </h2>
+
+          <p className="text-neutral-500 text-sm sm:text-base leading-relaxed max-w-xl">
+            Rydeon connects verified students already travelling your corridor — PCU to Hinjewadi, Wakad to Hadapsar — so no seat, and no rupee, goes to waste.
+          </p>
+
+          <div className="grid grid-cols-3 gap-4 pt-8 border-t border-neutral-100 max-w-xl">
+            <div>
+              <p className="text-3xl sm:text-4xl font-extrabold text-teal-700">7</p>
+              <p className="text-[10px] sm:text-xs font-bold text-neutral-400 uppercase tracking-wider mt-1">CAMPUS HUBS LIVE</p>
+            </div>
+            <div className="border-l border-neutral-200 pl-4">
+              <p className="text-3xl sm:text-4xl font-extrabold text-teal-700">3</p>
+              <p className="text-[10px] sm:text-xs font-bold text-neutral-400 uppercase tracking-wider mt-1">ACTIVE RIDE NETWORKS</p>
+            </div>
+            <div className="border-l border-neutral-200 pl-4">
+              <p className="text-3xl sm:text-4xl font-extrabold text-teal-700">24/7</p>
+              <p className="text-[10px] sm:text-xs font-bold text-neutral-400 uppercase tracking-wider mt-1">VERIFIED DRIVERS</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Identity Section */}
+      <section className="py-16 sm:py-24 px-4 bg-white border-t border-neutral-200/60 relative">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Left: Phone mockup with ride sharing UI */}
+          <div className="lg:col-span-5 flex justify-center">
+            <div className="relative rounded-2xl overflow-hidden border border-neutral-200 shadow-xl max-w-[360px] bg-neutral-50">
+              <img
+                src={phoneMock}
+                alt="Smartphone showing ride mapping app route screen"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Right: Text Content */}
+          <div className="lg:col-span-7 space-y-6">
+            <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block">OUR IDENTITY</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-black tracking-tight leading-tight">
+              Not another ride-sharing app
+            </h2>
+            <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
+              Commercial taxis aren't designed with student budgets or safety in mind. Rydeon is built from the ground up for our community.
+            </p>
+            <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
+              We noticed that hundreds of students commute daily along identical corridors — from housing clusters like <span className="font-semibold text-black">Undri and Hadapsar</span> straight to campus, and back. Rydeon pools this collective travel footprint.
+            </p>
+            <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
+              It is not a commercial service. There are no professional drivers or surging dynamic prices. It's simply verified peers split-billing standard trips. Safe, predictable, and authentic.
+            </p>
+
+            {/* Stats row */}
+            <div className="flex gap-10 pt-4 border-t border-neutral-100">
+              <div>
+                <p className="text-3xl font-extrabold text-teal-700">100%</p>
+                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mt-1">Verified Students</p>
+              </div>
+              <div>
+                <p className="text-3xl font-extrabold text-teal-700">₹0</p>
+                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mt-1">Hidden Agent Fees</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Campus Connectivity Section (Map 2) */}
+      <section className="py-16 sm:py-24 px-4 bg-neutral-50 border-t border-b border-neutral-200/60">
+        <div className="max-w-7xl mx-auto space-y-10">
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block mb-2">CAMPUS CONNECTIVITY</span>
+            <h2 className="text-3xl font-extrabold text-black tracking-tight mb-4">Your route. Your people.</h2>
+            <p className="text-neutral-500 text-sm sm:text-base">
+              A real-time network of student riders linking prominent institutes and transit hubs across Pune.
+            </p>
+          </div>
+
+          {/* 3D Campus Connectivity Model */}
+          <div className="w-full rounded-2xl border border-neutral-200 shadow-md overflow-hidden relative bg-white p-2">
+            <ThreeDModel />
+          </div>
+        </div>
+      </section>
+
+      {/* Showcase Section: AI Generated Images explaining core workflow */}
+      <section className="py-16 sm:py-24 px-4 bg-white border-b border-neutral-200/60 relative">
+        <div className="max-w-7xl mx-auto space-y-20">
+          <div className="text-center max-w-2xl mx-auto">
+            <h2 className="text-3xl font-extrabold text-black tracking-tight mb-4">Built specifically for student life</h2>
+            <p className="text-neutral-500">A reliable, peer-to-peer ride network tailored to your campus commute, station transfers, and weekend travel.</p>
+          </div>
+
+          {/* Feature 1: Passenger / Booking */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+            <div className="lg:col-span-6 order-2 lg:order-1">
+              <div className="relative rounded-2xl overflow-hidden border border-neutral-200 shadow-md bg-neutral-50">
+                <img
+                  src={studentsBook}
+                  alt="Student booking a ride on campus pathway"
+                  className="w-full h-auto object-cover max-h-[400px] hover:scale-102 transition-transform duration-500"
+                />
+              </div>
+            </div>
+            <div className="lg:col-span-6 order-1 lg:order-2 space-y-4">
+              <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest block">PASSENGER SERVICE</span>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-black leading-tight">Request a ride in seconds</h3>
+              <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
+                No more overpaying for single cabs or waiting under the sun for public buses. Simply input your destination and find verified students already driving your route. See exactly who you're riding with, check pricing details, and secure your seat instantly.
+              </p>
+              <div className="pt-2">
+                <Link to="/signup" className="inline-flex items-center text-sm font-bold text-black border-b border-black pb-1 hover:text-neutral-600 hover:border-neutral-600 transition">
+                  Find a student ride &rarr;
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Feature 2: Driver / Offering */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+            <div className="lg:col-span-6 space-y-4">
+              <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest block">DRIVER SAVINGS</span>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-black leading-tight">Share empty seats and save fuel</h3>
+              <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
+                Driving to college, internships, or heading home for the holidays? List your empty seats on Rydeon. You split fuel costs with fellow students traveling the same way, reduce parking demand, and build a stronger campus community.
+              </p>
+              <div className="pt-2">
+                <Link to="/signup" className="inline-flex items-center text-sm font-bold text-black border-b border-black pb-1 hover:text-neutral-600 hover:border-neutral-600 transition">
+                  Offer a student ride &rarr;
+                </Link>
+              </div>
+            </div>
+            <div className="lg:col-span-6">
+              <div className="relative rounded-2xl overflow-hidden border border-neutral-200 shadow-md bg-neutral-50">
+                <img
+                  src={studentsRide}
+                  alt="Students sharing a ride inside a car"
+                  className="w-full h-auto object-cover max-h-[400px] hover:scale-102 transition-transform duration-500"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust First Section */}
+      <section className="py-16 sm:py-24 px-4 bg-neutral-50 border-b border-neutral-200/60">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block mb-2">TRUST FIRST</span>
+            <h2 className="text-3xl font-extrabold text-black tracking-tight mb-4">Your safety is our absolute priority</h2>
+            <p className="text-neutral-500 text-sm sm:text-base">
+              Rydeon is built for peace of mind. Strict identity guardrails protect every campus trip.
+            </p>
+          </div>
+
+          {/* 2x2 Grid of Safety Features */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
+            <div className="bg-white border border-neutral-200 p-6 sm:p-8 rounded-xl shadow-sm space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center text-teal-700">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-black">College ID Verification</h3>
+              <p className="text-neutral-600 text-sm leading-relaxed">
+                Access is limited strictly to active college domain addresses and verified digital student IDs.
+              </p>
+            </div>
+
+            <div className="bg-white border border-neutral-200 p-6 sm:p-8 rounded-xl shadow-sm space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center text-teal-700">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-black">Verified Profiles & Ratings</h3>
+              <p className="text-neutral-600 text-sm leading-relaxed">
+                No anonymous profiles. Review ratings from actual campus colleagues before booking.
+              </p>
+            </div>
+
+            <div className="bg-white border border-neutral-200 p-6 sm:p-8 rounded-xl shadow-sm space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center text-teal-700">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-black">Real-time Ride Tracking</h3>
+              <p className="text-neutral-600 text-sm leading-relaxed">
+                Live location-sharing ensures your trusted contacts always know your commute coordinates.
+              </p>
+            </div>
+
+            <div className="bg-white border border-neutral-200 p-6 sm:p-8 rounded-xl shadow-sm space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center text-teal-700">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-black">In-app Ride Chat</h3>
+              <p className="text-neutral-600 text-sm leading-relaxed">
+                Message riders directly within the app's protected sandbox. No personal phone numbers shared.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* How It Works */}
-      <section className="py-24 px-4 bg-slate-800/20 border-y border-white/5 backdrop-blur-md fade-in" style={{ animationDelay: '0.1s' }}>
+      <section className="py-16 sm:py-24 px-4 bg-white border-b border-neutral-200/60">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-white mb-4">How it works</h2>
-            <p className="text-slate-400 max-w-xl mx-auto">Getting where you need to go has never been easier. Just three simple steps.</p>
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-black mb-3">How it works</h2>
+            <p className="text-neutral-500 max-w-xl mx-auto text-sm sm:text-base">Three easy steps to get you where you need to be.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 relative">
-            <div className="hidden md:block absolute top-12 left-1/6 right-1/6 h-0.5 bg-slate-800 -z-10" style={{ width: '66%', transform: 'translateX(25%)' }}></div>
-            
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {[
-              { step: '1', title: 'Sign Up', desc: 'Use your .edu.in email to instantly verify your student status.' },
-              { step: '2', title: 'Find or Offer', desc: 'Browse available rides or post your own schedule to find passengers.' },
-              { step: '3', title: 'Ride & Save', desc: 'Split costs effortlessly and enjoy a safe trip with fellow peers.' }
+              { step: '1', title: 'Verify Email', desc: 'Sign up securely using your university .edu.in email address to verify status.' },
+              { step: '2', title: 'Match Ride', desc: 'Search active rides matching your route or post your car route to invite riders.' },
+              { step: '3', title: 'Travel & Share', desc: 'Hop in, save fuel, split the cost, and make friends safely around campus.' }
             ].map((item, idx) => (
-              <div key={idx} className="flex flex-col items-center text-center p-8 rounded-3xl bg-slate-800/40 hover:bg-slate-800/80 hover:shadow-2xl transition-all duration-300 border border-white/5 hover:border-white/10 transform hover:-translate-y-2 backdrop-blur-sm">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-500/20 to-indigo-500/20 flex items-center justify-center text-2xl font-bold text-brand-400 mb-6 border border-brand-500/20 shadow-[0_0_20px_rgba(20,184,166,0.2)]">
+              <div key={idx} className="bg-white border border-neutral-200 p-6 sm:p-8 rounded-xl shadow-sm transition hover:shadow-md">
+                <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center text-base font-bold mb-6">
                   {item.step}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-                <p className="text-slate-400 leading-relaxed">{item.desc}</p>
+                <h3 className="text-lg font-bold text-black mb-2">{item.title}</h3>
+                <p className="text-neutral-600 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -117,52 +428,47 @@ function Landing() {
       </section>
 
       {/* Demo Rides Section */}
-      <section className="py-24 px-4 fade-in" style={{ animationDelay: '0.2s' }}>
+      <section className="py-16 sm:py-24 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-12">
-            <div>
-              <h2 className="text-3xl font-bold text-white mb-2">Recent Rides Preview</h2>
-              <p className="text-slate-400">See what's happening right now on campus.</p>
-            </div>
+          <div className="mb-10">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-black mb-2">Recent Rides Preview</h2>
+            <p className="text-neutral-500 text-sm sm:text-base">See the latest rides happening on campus.</p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {demoRides.map((ride) => (
-              <div key={ride.id} className="card group hover:border-brand-500/30 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(20,184,166,0.15)] bg-slate-800/20 backdrop-blur-xl border-slate-700/30">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-800 group-hover:bg-brand-500/10 flex items-center justify-center text-slate-300 group-hover:text-brand-400 font-bold uppercase overflow-hidden ring-1 ring-slate-700/50 transition-colors duration-300">
-                    {ride.driver.charAt(0)}
+              <div key={ride.id} className="border border-neutral-200 bg-white p-5 rounded-xl shadow-sm hover:border-neutral-300 hover:shadow transition">
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-800 font-bold text-sm">
+                      {ride.driver.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-sm text-black">{ride.driver}</h3>
+                      <p className="text-xs text-neutral-500">{ride.time}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-white group-hover:text-brand-400 transition-colors">{ride.driver}</h3>
-                    <p className="text-sm text-brand-400 font-medium">₹{ride.price.replace('$','')}</p>
-                  </div>
-                </div>
-                
-                <div className="relative pl-6 mb-6">
-                  <div className="absolute top-2 left-1.5 w-0.5 h-10 bg-slate-700 group-hover:bg-brand-500/30 transition-colors"></div>
-                  
-                  <div className="mb-4 relative z-10">
-                    <div className="absolute top-1.5 -left-6 w-3 h-3 bg-brand-500 rounded-full border-2 border-slate-900 ring-4 ring-brand-500/10"></div>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Pickup</p>
-                    <p className="font-bold text-slate-200">{ride.origin}</p>
-                  </div>
-                  
-                  <div className="relative z-10">
-                    <div className="absolute top-1.5 -left-6 w-3 h-3 bg-indigo-500 rounded-full border-2 border-slate-900 ring-4 ring-indigo-500/10"></div>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Dropoff</p>
-                    <p className="font-bold text-slate-200">{ride.destination}</p>
+                  <div className="text-right shrink-0">
+                    <span className="text-sm font-black text-black">₹{ride.price}</span>
                   </div>
                 </div>
-                
-                <div className="flex items-center justify-between pt-6 border-t border-slate-700/50">
-                  <div className="flex items-center text-xs font-bold text-slate-400 bg-slate-900/50 px-3 py-2 rounded-xl border border-slate-700/50 group-hover:border-brand-500/20 transition-colors">
-                    <svg className="w-4 h-4 mr-1.5 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {ride.time}
+
+                <div className="space-y-2 border-t border-b border-neutral-100 py-3 my-3 text-xs text-neutral-700">
+                  <div className="flex gap-2">
+                    <span className="text-neutral-400 font-bold shrink-0">From</span>
+                    <span className="font-semibold text-black truncate">{ride.origin}</span>
                   </div>
-                  <div className="text-[10px] font-black px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-tighter">
-                    {ride.seats} seats
+                  <div className="flex gap-2">
+                    <span className="text-neutral-400 font-bold shrink-0">To</span>
+                    <span className="font-semibold text-black truncate">{ride.destination}</span>
                   </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-neutral-500 font-medium">Safe ride verified</span>
+                  <span className="font-bold text-neutral-900 bg-neutral-100 px-2.5 py-1 rounded">
+                    {ride.seats} seats left
+                  </span>
                 </div>
               </div>
             ))}
@@ -171,28 +477,24 @@ function Landing() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 bg-slate-800/30 border-t border-white/5 px-4 backdrop-blur-md fade-in" style={{ animationDelay: '0.3s' }}>
+      <section className="py-16 sm:py-24 bg-neutral-50 border-t border-neutral-100 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-white mb-4">Trusted by Students</h2>
-            <p className="text-slate-400">Join hundreds of students already saving money on rides.</p>
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-black mb-3">Trusted by Students</h2>
+            <p className="text-neutral-500 text-sm sm:text-base">Read about other students' ride sharing experiences.</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
             {testimonials.map((t) => (
-              <div key={t.id} className="p-8 rounded-3xl bg-slate-800/40 border border-white/5 backdrop-blur-sm">
-                <div className="flex text-amber-400 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-5 h-5 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                  ))}
-                </div>
-                <p className="text-lg text-slate-300 italic mb-6">"{t.text}"</p>
+              <div key={t.id} className="bg-white border border-neutral-200 p-6 sm:p-8 rounded-xl shadow-sm">
+                <p className="text-sm sm:text-base text-neutral-700 italic mb-6">"{t.text}"</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-slate-300">
+                  <div className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center font-bold text-xs text-neutral-800">
                     {t.name.charAt(0)}
                   </div>
                   <div>
-                    <h4 className="font-bold text-white">{t.name}</h4>
-                    <p className="text-sm text-slate-500">{t.role}</p>
+                    <h4 className="font-bold text-xs text-black">{t.name}</h4>
+                    <p className="text-[10px] text-neutral-500">{t.role}</p>
                   </div>
                 </div>
               </div>
@@ -202,58 +504,54 @@ function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-slate-950 border-t border-slate-900">
+      <footer className="py-12 bg-white border-t border-neutral-200">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
           {/* Brand */}
           <div className="flex flex-col items-center md:items-start">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-6 h-6 rounded flex items-center justify-center">
-                <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span className="text-xl font-bold text-slate-400">Rydeon</span>
+              <span className="text-lg font-bold text-black">Rydeon</span>
             </div>
-            <p className="text-slate-600 text-sm">© 2026 Campus RideShare.<br className="hidden md:block" />All rights reserved.</p>
+            <p className="text-neutral-400 text-xs">© 2026 Campus RideShare. All rights reserved.</p>
           </div>
 
           {/* Support */}
           <div className="flex flex-col items-center md:items-start">
-            <h3 className="text-white font-semibold mb-4">Support</h3>
-            <ul className="space-y-2 text-sm text-slate-400">
-              <li><button onClick={() => setActiveModal('help')} className="hover:text-brand-400 transition-colors text-left">Help Center</button></li>
-              <li><button onClick={() => setActiveModal('safety')} className="hover:text-brand-400 transition-colors text-left">Safety Guidelines</button></li>
-              <li><button onClick={() => setActiveModal('privacy')} className="hover:text-brand-400 transition-colors text-left">Privacy Policy</button></li>
+            <h3 className="text-black font-bold mb-4 text-sm">Support</h3>
+            <ul className="space-y-2 text-xs text-neutral-500">
+              <li><button onClick={() => setActiveModal('help')} className="hover:text-black transition-colors text-left font-semibold">Help Center</button></li>
+              <li><button onClick={() => setActiveModal('safety')} className="hover:text-black transition-colors text-left font-semibold">Safety Guidelines</button></li>
+              <li><button onClick={() => setActiveModal('privacy')} className="hover:text-black transition-colors text-left font-semibold">Privacy Policy</button></li>
             </ul>
           </div>
 
           {/* Contact Us */}
           <div className="flex flex-col items-center md:items-start">
-            <h3 className="text-white font-semibold mb-4">Contact Us</h3>
-            <ul className="space-y-2 text-sm text-slate-400">
-              <li><a href="mailto:teamrydeon@gmail.com" className="hover:text-brand-400 transition-colors">teamrydeon@gmail.com</a></li>
-              <li><a href="tel:+919876543210" className="hover:text-brand-400 transition-colors">+91 9460994039</a></li>
-              <li>Pune, Maharashtra</li>
+            <h3 className="text-black font-bold mb-4 text-sm">Contact Us</h3>
+            <ul className="space-y-2 text-xs text-neutral-500">
+              <li><a href="mailto:teamrydeon@gmail.com" className="hover:text-black transition-colors font-semibold">teamrydeon@gmail.com</a></li>
+              <li><a href="tel:+919876543210" className="hover:text-black transition-colors font-semibold">+91 9460994039</a></li>
+              <li className="font-semibold text-neutral-400">Pune, Maharashtra</li>
             </ul>
           </div>
         </div>
       </footer>
+
       {/* Modals */}
       {activeModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setActiveModal(null)}>
-          <div 
-            className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto shadow-2xl"
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setActiveModal(null)}>
+          <div
+            className="bg-white border border-neutral-200 rounded-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-slate-900/90 backdrop-blur pb-2 pt-6 px-6 border-b border-slate-800 flex justify-between items-center z-10">
-              <h2 className="text-xl font-bold text-white">
+            <div className="sticky top-0 bg-white/95 backdrop-blur pb-3 pt-6 px-6 border-b border-neutral-100 flex justify-between items-center z-10">
+              <h2 className="text-base sm:text-lg font-bold text-black">
                 {activeModal === 'safety' && '🚦 Rydeon – Safety Guidelines'}
                 {activeModal === 'help' && '🆘 Rydeon Help Centre'}
-                {activeModal === 'privacy' && '🔒 Rydeon Privacy Policy (Simple Version)'}
+                {activeModal === 'privacy' && '🔒 Rydeon Privacy Policy'}
               </h2>
-              <button 
+              <button
                 onClick={() => setActiveModal(null)}
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-full transition-colors"
+                className="p-1.5 text-neutral-400 hover:text-black hover:bg-neutral-100 rounded-full transition"
                 aria-label="Close modal"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -261,45 +559,45 @@ function Landing() {
                 </svg>
               </button>
             </div>
-            <div className="p-6 text-slate-300 space-y-6">
+
+            <div className="p-6 text-neutral-700 space-y-6 text-xs sm:text-sm">
               {activeModal === 'safety' && (
                 <>
                   <div>
-                    <h3 className="font-bold text-brand-400 mb-2 flex items-center gap-2">🔐 Account Safety</h3>
-                    <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                    <h3 className="font-bold text-black mb-2 flex items-center gap-2 border-l-2 border-black pl-2">🔐 Account Safety</h3>
+                    <ul className="list-disc pl-5 space-y-1.5 text-neutral-600">
                       <li>Always use your own account — don’t share login details.</li>
                       <li>Keep your password strong and private.</li>
                       <li>Verify your phone/email before using the platform.</li>
                     </ul>
                   </div>
                   <div>
-                    <h3 className="font-bold text-brand-400 mb-2 flex items-center gap-2">🚗 Ride Safety</h3>
-                    <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                    <h3 className="font-bold text-black mb-2 flex items-center gap-2 border-l-2 border-black pl-2">🚗 Ride Safety</h3>
+                    <ul className="list-disc pl-5 space-y-1.5 text-neutral-600">
                       <li>Always check driver/rider details before starting the ride.</li>
                       <li>Match vehicle number and name shown in the app.</li>
                       <li>Avoid accepting rides from unknown/unverified users.</li>
                     </ul>
                   </div>
                   <div>
-                    <h3 className="font-bold text-brand-400 mb-2 flex items-center gap-2">📍 During the Ride</h3>
-                    <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                    <h3 className="font-bold text-black mb-2 flex items-center gap-2 border-l-2 border-black pl-2">📍 During the Ride</h3>
+                    <ul className="list-disc pl-5 space-y-1.5 text-neutral-600">
                       <li>Share your ride details with friends or family.</li>
                       <li>Sit in a comfortable and safe position.</li>
                       <li>If something feels wrong, cancel the ride immediately.</li>
                     </ul>
                   </div>
                   <div>
-                    <h3 className="font-bold text-brand-400 mb-2 flex items-center gap-2">🚫 Do’s & Don’ts</h3>
-                    <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                    <h3 className="font-bold text-black mb-2 flex items-center gap-2 border-l-2 border-black pl-2">🚫 Do’s & Don’ts</h3>
+                    <ul className="list-disc pl-5 space-y-1.5 text-neutral-600">
                       <li>Do not carry illegal items.</li>
                       <li>Do not misbehave with drivers or riders.</li>
                       <li>Follow traffic rules and respect others.</li>
                     </ul>
                   </div>
                   <div>
-                    <h3 className="font-bold text-red-400 mb-2 flex items-center gap-2">🆘 Emergency</h3>
-                    <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                      <li>Use the emergency button (if available).</li>
+                    <h3 className="font-bold text-red-600 mb-2 flex items-center gap-2 border-l-2 border-red-600 pl-2">🆘 Emergency</h3>
+                    <ul className="list-disc pl-5 space-y-1.5 text-neutral-600">
                       <li>Contact local authorities if needed.</li>
                       <li>Report issues through the app immediately.</li>
                     </ul>
@@ -309,36 +607,28 @@ function Landing() {
 
               {activeModal === 'help' && (
                 <>
-                  <h3 className="font-bold text-amber-400 mb-4 flex items-center gap-2">📌 Common Issues</h3>
+                  <h3 className="font-bold text-black mb-4 flex items-center gap-2">📌 Common Issues</h3>
                   <div className="space-y-4">
                     <div>
-                      <h4 className="font-semibold text-white mb-1">1. Unable to book a ride</h4>
-                      <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                      <h4 className="font-semibold text-black mb-1">1. Unable to book a ride</h4>
+                      <ul className="list-disc pl-5 space-y-1.5 text-neutral-600">
                         <li>Check your internet connection.</li>
                         <li>Try refreshing the app.</li>
                         <li>Make sure your location is enabled.</li>
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-white mb-1">2. Payment issues</h4>
-                      <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                      <h4 className="font-semibold text-black mb-1">2. Payment issues</h4>
+                      <ul className="list-disc pl-5 space-y-1.5 text-neutral-600">
                         <li>Check if your payment method is valid.</li>
                         <li>Retry after some time.</li>
-                        <li>Contact support if amount is deducted but ride failed.</li>
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-white mb-1">3. Driver/Rider not responding</h4>
-                      <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                      <h4 className="font-semibold text-black mb-1">3. Driver/Rider not responding</h4>
+                      <ul className="list-disc pl-5 space-y-1.5 text-neutral-600">
                         <li>Try calling through the app.</li>
                         <li>Cancel and book another ride if needed.</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-white mb-1">4. Ride cancellation</h4>
-                      <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                        <li>You can cancel anytime before the ride starts.</li>
-                        <li>Avoid frequent cancellations to maintain good rating.</li>
                       </ul>
                     </div>
                   </div>
@@ -348,42 +638,26 @@ function Landing() {
               {activeModal === 'privacy' && (
                 <>
                   <div>
-                    <h3 className="font-bold text-indigo-400 mb-2 flex items-center gap-2">📊 What Data We Collect</h3>
-                    <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                    <h3 className="font-bold text-black mb-2 flex items-center gap-2">📊 What Data We Collect</h3>
+                    <ul className="list-disc pl-5 space-y-1.5 text-neutral-600">
                       <li>Name, phone number, email</li>
                       <li>Location (for ride tracking)</li>
                       <li>Payment details (secured)</li>
                     </ul>
                   </div>
                   <div>
-                    <h3 className="font-bold text-indigo-400 mb-2 flex items-center gap-2">🎯 Why We Collect It</h3>
-                    <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                    <h3 className="font-bold text-black mb-2 flex items-center gap-2">🎯 Why We Collect It</h3>
+                    <ul className="list-disc pl-5 space-y-1.5 text-neutral-600">
                       <li>To connect riders and drivers</li>
                       <li>To improve user experience</li>
                       <li>To ensure safety and security</li>
                     </ul>
                   </div>
                   <div>
-                    <h3 className="font-bold text-indigo-400 mb-2 flex items-center gap-2">🔐 Data Protection</h3>
-                    <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                      <li>Your data is सुरक्षित (safe) and encrypted</li>
-                      <li>We do not sell your personal data</li>
-                      <li>Only required information is shared between users</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-indigo-400 mb-2 flex items-center gap-2">🤝 Sharing of Data</h3>
-                    <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                      <li>Rider sees driver basic details (name, vehicle)</li>
-                      <li>Driver sees rider basic details</li>
-                      <li>No sensitive data is shared</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-indigo-400 mb-2 flex items-center gap-2">🧾 User Control</h3>
-                    <ul className="list-disc pl-5 space-y-1 text-slate-400">
-                      <li>You can update or delete your account anytime</li>
-                      <li>You can control what information you share</li>
+                    <h3 className="font-bold text-black mb-2 flex items-center gap-2">🔐 Data Protection</h3>
+                    <ul className="list-disc pl-5 space-y-1.5 text-neutral-600">
+                      <li>Your data is safe and encrypted. We do not sell your personal data.</li>
+                      <li>Only required information is shared between users.</li>
                     </ul>
                   </div>
                 </>

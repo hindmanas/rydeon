@@ -17,8 +17,8 @@ function Login() {
     try {
       const result = await loginWithGoogle();
       const user = result.user;
-      
-      if (!user.email.endsWith('@pcu.edu.in')) {
+
+      if (!user.email.endsWith('@pcu.edu.in') && user.email !== 'teamrydeon@gmail.com') {
         await logout();
         toast.error("Please sign in with your college email account (@pcu.edu.in).");
         return;
@@ -28,14 +28,14 @@ function Login() {
       const userDocRef = doc(db, 'users', user.uid);
       const userDocSnap = await getDoc(userDocRef);
       if (!userDocSnap.exists()) {
-          // Send them to onboarding
-          navigate('/onboarding');
+        // Send them to onboarding
+        navigate('/onboarding');
       } else {
         const data = userDocSnap.data();
         if (data.onboarded) {
-           navigate('/dashboard');
+          navigate('/dashboard');
         } else {
-           navigate('/onboarding');
+          navigate('/onboarding');
         }
       }
 
@@ -52,7 +52,7 @@ function Login() {
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
-    if (!email.endsWith('@pcu.edu.in')) {
+    if (!email.endsWith('@pcu.edu.in') && email !== 'teamrydeon@gmail.com') {
       toast.error("Only @pcu.edu.in emails are permitted.");
       return;
     }
@@ -61,17 +61,17 @@ function Login() {
     try {
       const result = await loginWithEmail(email, password);
       const user = result.user;
-      
+
       const userDocRef = doc(db, 'users', user.uid);
       const userDocSnap = await getDoc(userDocRef);
       if (!userDocSnap.exists()) {
-          navigate('/onboarding');
+        navigate('/onboarding');
       } else {
         const data = userDocSnap.data();
         if (data.onboarded) {
-           navigate('/dashboard');
+          navigate('/dashboard');
         } else {
-           navigate('/onboarding');
+          navigate('/onboarding');
         }
       }
 
@@ -92,11 +92,11 @@ function Login() {
       <div className="card w-full max-w-sm p-8 md:p-10 text-center relative overflow-hidden">
         {/* Neon accent top border */}
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-400 via-emerald-500 to-teal-500"></div>
-        
+
         <div className="w-16 h-16 bg-brand-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-brand-500/20 shadow-[0_0_15px_rgba(16,185,129,0.2)] text-brand-400">
-           <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-           </svg>
+          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+          </svg>
         </div>
 
         <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-2 tracking-tight">Welcome Back</h1>
@@ -105,8 +105,8 @@ function Login() {
         <form onSubmit={handleEmailLogin} className="space-y-4 mb-6">
           <div className="text-left">
             <label className="block text-sm font-medium text-slate-300 mb-1.5 ml-1">University Email</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="id@pcu.edu.in"
@@ -114,19 +114,19 @@ function Login() {
               required
             />
           </div>
-          
+
           <div className="text-left relative">
             <label className="block text-sm font-medium text-slate-300 mb-1.5 ml-1">Password</label>
             <div className="relative">
-              <input 
-                type={showPassword ? "text" : "password"} 
+              <input
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="input-field py-3 pl-4 pr-10 w-full bg-white/5 border border-white/10 rounded-xl text-white focus:ring-2 focus:ring-brand-500 outline-none transition"
                 required
               />
-              <button 
+              <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white"
@@ -140,8 +140,8 @@ function Login() {
             </div>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="w-full btn-primary py-3.5 mt-2"
           >
@@ -155,8 +155,8 @@ function Login() {
           <div className="flex-grow border-t border-white/10"></div>
         </div>
 
-        <button 
-          onClick={handleGoogleAuth} 
+        <button
+          onClick={handleGoogleAuth}
           disabled={loading}
           className="w-full flex items-center justify-center gap-3 px-6 py-3.5 bg-white/5 border border-white/10 text-slate-200 font-semibold rounded-2xl hover:bg-white/10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-brand-500 active:scale-[0.98] transition-all duration-200 shadow-sm hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]"
         >
@@ -165,9 +165,9 @@ function Login() {
         </button>
 
         <div className="mt-8 pt-6 border-t border-white/5">
-           <p className="text-sm text-slate-400 transition flex items-center justify-center gap-2">
-             New here? <Link to="/signup" className="text-brand-400 font-semibold hover:text-brand-300 transition-colors">Create Account</Link>
-           </p>
+          <p className="text-sm text-slate-400 transition flex items-center justify-center gap-2">
+            New here? <Link to="/signup" className="text-brand-400 font-semibold hover:text-brand-300 transition-colors">Create Account</Link>
+          </p>
         </div>
       </div>
     </div>

@@ -32,17 +32,13 @@ function Dashboard({ user }) {
 
   useEffect(() => {
     if (!user?.uid) return;
-    const q = query(
-      collection(db, 'ride_requests'), 
-      where('driverId', '==', user.uid),
-      where('status', '==', 'pending')
-    );
+    const q = query(collection(db, 'ride_requests'), where('driverId', '==', user.uid), where('status', '==', 'pending'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const requests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       requests.sort((a, b) => {
-         const t1 = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-         const t2 = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
-         return t2 - t1;
+        const t1 = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+        const t2 = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+        return t2 - t1;
       });
       setPendingRequests(requests);
     });
@@ -67,13 +63,13 @@ function Dashboard({ user }) {
   };
 
   const handleCancelRide = async (rideId) => {
-    if (!window.confirm("Are you sure you want to cancel this ride?")) return;
-    
+    if (!window.confirm('Are you sure you want to cancel this ride?')) return;
+
     try {
       const response = await fetch(`${API_BASE}/rides/${rideId}`, {
-         method: 'DELETE',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({ userId: user.uid })
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.uid })
       });
       if (!response.ok) throw new Error('Failed to cancel ride');
       fetchData();
@@ -87,11 +83,7 @@ function Dashboard({ user }) {
       const response = await fetch(`${API_BASE}/rides/finish-ride`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          rideId: ride.id, 
-          userId: user.uid,
-          satisfied: options.satisfied
-        })
+        body: JSON.stringify({ rideId: ride.id, userId: user.uid, satisfied: options.satisfied })
       });
       if (!response.ok) throw new Error('Failed to finish ride');
       fetchData();
@@ -100,128 +92,109 @@ function Dashboard({ user }) {
     }
   };
 
-  if (loading) return <div className="text-center mt-20 text-slate-400">Loading your dashboard...</div>;
+  if (loading) return <div className="mt-20 text-center text-slate-500">Loading your dashboard...</div>;
+
+  const activeCreated = createdRides.filter(ride => !ride.completedBy?.includes(user.uid));
+  const activeJoined = joinedRides.filter(ride => !ride.completedBy?.includes(user.uid));
 
   return (
-    <div className="fade-in space-y-16">
-      
-      <div className="grid md:grid-cols-2 gap-8 mt-6">
-        <Link to="/" className="card group flex flex-col items-center justify-center p-12 text-center hover:bg-brand-500/10 cursor-pointer">
-          <div className="w-20 h-20 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-             <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-             </svg>
+    <main className="fade-in space-y-8">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="flex flex-wrap items-start justify-between gap-5">
+          <div>
+            <p className="text-sm font-bold uppercase text-teal-700">Driver console</p>
+            <h1 className="mt-2 text-3xl font-extrabold text-slate-950 sm:text-4xl">Manage rides and requests</h1>
+            <p className="mt-2 max-w-2xl text-sm font-medium text-slate-500">A cleaner reference dashboard with strong hierarchy, useful counts, and fewer decorative effects.</p>
           </div>
-          <h2 className="text-3xl font-extrabold text-white mb-2 group-hover:text-brand-400 transition-colors">Find a Ride</h2>
-          <p className="text-slate-400 max-w-xs">Search available rides and join your peers heading to campus.</p>
-        </Link>
-
-        <Link to="/create" className="card group flex flex-col items-center justify-center p-12 text-center hover:bg-indigo-500/10 cursor-pointer">
-          <div className="w-20 h-20 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-             <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-             </svg>
+          <div className="flex gap-3">
+            <Link to="/" className="btn-secondary">Find rides</Link>
+            <Link to="/create" className="btn-primary">Offer ride</Link>
           </div>
-          <h2 className="text-3xl font-extrabold text-white mb-2 group-hover:text-indigo-400 transition-colors">Offer a Ride</h2>
-          <p className="text-slate-400 max-w-xs">Driving somewhere? Share seats, split costs, and meet new friends.</p>
-        </Link>
-      </div>
+        </div>
 
-      <div className="border-t border-slate-800 pt-16 space-y-12">
-        <div>
-          <h2 className="text-2xl font-bold text-white mb-2">Pending Requests</h2>
-          <p className="text-slate-400 mb-6">Students asking to join your rides.</p>
-          
-          {pendingRequests.length === 0 ? (
-             <p className="text-slate-500 bg-slate-800/30 p-6 rounded-2xl border border-slate-700/50 italic text-center">No pending requests at the moment.</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {pendingRequests.map(req => {
-                 const ride = createdRides.find(r => r.id === req.rideId);
-                 return (
-                  <div key={req.id} className="card bg-slate-800/20 backdrop-blur-xl border-brand-500/30">
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold">
-                          {req.requesterName.charAt(0)}
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-white">{req.requesterName}</h3>
-                          <p className="text-xs text-slate-400">wants to join</p>
-                        </div>
-                      </div>
-                    </div>
-                    {ride && (
-                      <div className="mb-4 text-sm text-slate-300 bg-slate-900/50 p-3 rounded-lg">
-                         <span className="block truncate font-medium">{ride.pickup} → {ride.dropoff}</span>
-                         <span className="text-emerald-400 font-medium text-xs mt-1 block">
-                           {new Date(ride.time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                         </span>
-                      </div>
-                    )}
-                    <div className="flex gap-2 mt-4">
-                      <button 
-                        onClick={() => handleUpdateRequest(req.id, 'accepted')}
-                        className="flex-1 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 font-semibold transition-colors"
-                      >
-                        Confirm
-                      </button>
-                      <button 
-                        onClick={() => handleUpdateRequest(req.id, 'rejected')}
-                        className="flex-1 py-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 font-semibold transition-colors"
-                      >
-                        Reject
-                      </button>
+        <div className="mt-8 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl bg-slate-50 p-4">
+            <p className="text-sm font-bold text-slate-500">Pending requests</p>
+            <p className="mt-2 text-3xl font-extrabold text-slate-950">{pendingRequests.length}</p>
+          </div>
+          <div className="rounded-2xl bg-slate-50 p-4">
+            <p className="text-sm font-bold text-slate-500">Offered rides</p>
+            <p className="mt-2 text-3xl font-extrabold text-slate-950">{activeCreated.length}</p>
+          </div>
+          <div className="rounded-2xl bg-teal-50 p-4">
+            <p className="text-sm font-bold text-teal-700">Joined rides</p>
+            <p className="mt-2 text-3xl font-extrabold text-teal-900">{activeJoined.length}</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="mb-4 flex items-end justify-between border-b border-slate-200 pb-4">
+          <div>
+            <h2 className="text-2xl font-extrabold text-slate-950">Pending requests</h2>
+            <p className="mt-1 text-sm font-medium text-slate-500">Students asking to join your rides.</p>
+          </div>
+        </div>
+        {pendingRequests.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm font-semibold text-slate-500">No pending requests at the moment.</div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {pendingRequests.map(req => {
+              const ride = createdRides.find(r => r.id === req.rideId);
+              return (
+                <div key={req.id} className="card">
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="grid h-11 w-11 place-items-center rounded-xl bg-teal-50 font-extrabold text-teal-700">{req.requesterName.charAt(0)}</div>
+                    <div className="min-w-0">
+                      <h3 className="truncate font-extrabold text-slate-950">{req.requesterName}</h3>
+                      <p className="text-sm font-medium text-slate-500">wants to join</p>
                     </div>
                   </div>
-                 );
-              })}
-            </div>
-          )}
-        </div>
+                  {ride && (
+                    <div className="mb-4 rounded-2xl bg-slate-50 p-4 text-sm">
+                      <p className="truncate font-extrabold text-slate-950">{ride.pickup} to {ride.dropoff}</p>
+                      <p className="mt-1 font-semibold text-teal-700">{new Date(ride.time).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <button onClick={() => handleUpdateRequest(req.id, 'accepted')} className="flex-1 rounded-xl bg-teal-700 py-3 text-sm font-bold text-white hover:bg-teal-800">Confirm</button>
+                    <button onClick={() => handleUpdateRequest(req.id, 'rejected')} className="flex-1 rounded-xl border border-slate-200 bg-white py-3 text-sm font-bold text-slate-700 hover:bg-slate-50">Reject</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
-        <div>
-          <h2 className="text-2xl font-bold text-white mb-2">My Offered Rides</h2>
-          <p className="text-slate-400 mb-6">Rides you are currently driving.</p>
-          
-          {createdRides.length === 0 ? (
-             <p className="text-slate-500 bg-slate-800/30 p-6 rounded-2xl border border-slate-700/50 italic text-center">You haven't offered any rides yet.</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {createdRides.filter(ride => !ride.completedBy?.includes(user.uid)).map(ride => (
-                <RideCard 
-                  key={ride.id} 
-                  ride={ride} 
-                  currentUserId={user.uid}
-                  onCancel={handleCancelRide}
-                  onFinish={handleFinishRide}
-                />
-              ))}
-            </div>
-          )}
+      <section>
+        <div className="mb-4 border-b border-slate-200 pb-4">
+          <h2 className="text-2xl font-extrabold text-slate-950">My offered rides</h2>
+          <p className="mt-1 text-sm font-medium text-slate-500">Rides you are currently driving.</p>
         </div>
+        {activeCreated.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm font-semibold text-slate-500">You have not offered any rides yet.</div>
+        ) : (
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {activeCreated.map(ride => <RideCard key={ride.id} ride={ride} currentUserId={user.uid} onCancel={handleCancelRide} onFinish={handleFinishRide} />)}
+          </div>
+        )}
+      </section>
 
-        <div>
-          <h2 className="text-2xl font-bold text-white mb-2">My Joined Rides</h2>
-          <p className="text-slate-400 mb-6">Upcoming trips you've booked.</p>
-          
-          {joinedRides.length === 0 ? (
-             <p className="text-slate-500 bg-slate-800/30 p-6 rounded-2xl border border-slate-700/50 italic text-center">You haven't joined any rides yet.</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {joinedRides.filter(ride => !ride.completedBy?.includes(user.uid)).map(ride => (
-                <RideCard 
-                  key={ride.id} 
-                  ride={ride} 
-                  currentUserId={user.uid}
-                  onFinish={handleFinishRide}
-                />
-              ))}
-            </div>
-          )}
+      <section>
+        <div className="mb-4 border-b border-slate-200 pb-4">
+          <h2 className="text-2xl font-extrabold text-slate-950">My joined rides</h2>
+          <p className="mt-1 text-sm font-medium text-slate-500">Upcoming trips you have booked.</p>
         </div>
-      </div>
-    </div>
+        {activeJoined.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm font-semibold text-slate-500">You have not joined any rides yet.</div>
+        ) : (
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {activeJoined.map(ride => <RideCard key={ride.id} ride={ride} currentUserId={user.uid} onFinish={handleFinishRide} />)}
+          </div>
+        )}
+      </section>
+    </main>
   );
 }
 
