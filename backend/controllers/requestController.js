@@ -37,7 +37,12 @@ exports.createRequest = async (req, res) => {
             requesterName,
             driverId,
             driverName,
+            pickup: req.body.pickup || '',
+            dropoff: req.body.dropoff || '',
+            time: req.body.time || '',
             status: 'pending', // pending, accepted, rejected
+            seenByDriver: false,
+            seenByRequester: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp()
         };
 

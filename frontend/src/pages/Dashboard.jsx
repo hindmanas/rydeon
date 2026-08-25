@@ -4,7 +4,8 @@ import RideCard from '../components/RideCard';
 import { db } from '../services/firebase';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+const rawBase = import.meta.env.VITE_API_BASE;
+const API_BASE = typeof rawBase === 'string' ? rawBase.trim().replace(/^['"]|['"]$/g, '') : rawBase;
 
 function Dashboard({ user }) {
   const [createdRides, setCreatedRides] = useState([]);
@@ -12,22 +13,53 @@ function Dashboard({ user }) {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch(`${API_BASE}/rides/user-rides/${user.uid}`);
-      if (!response.ok) throw new Error('Failed to fetch rides');
-      const data = await response.json();
-      setCreatedRides(data.createdRides);
-      setJoinedRides(data.joinedRides);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchData();
+    if (!user?.uid) return;
+
+    // Listener for created rides (driverId == user.uid)
+    const qCreated = query(
+      collection(db, 'rides'),
+      where('driverId', '==', user.uid)
+    );
+
+    const unsubscribeCreated = onSnapshot(qCreated, (snapshot) => {
+      const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      list.sort((a, b) => {
+        const t1 = a.createdAt?.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt || 0).getTime();
+        const t2 = b.createdAt?.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt || 0).getTime();
+        return t2 - t1;
+      });
+      setCreatedRides(list);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+
+    // Listener for joined rides (riderIds contains user.uid)
+    const qJoined = query(
+      collection(db, 'rides'),
+      where('riderIds', 'array-contains', user.uid)
+    );
+
+    const unsubscribeJoined = onSnapshot(qJoined, (snapshot) => {
+      const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      list.sort((a, b) => {
+        const t1 = a.createdAt?.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt || 0).getTime();
+        const t2 = b.createdAt?.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt || 0).getTime();
+        return t2 - t1;
+      });
+      setJoinedRides(list);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setLoading(false);
+    });
+
+    return () => {
+      unsubscribeCreated();
+      unsubscribeJoined();
+    };
   }, [user.uid]);
 
   useEffect(() => {
@@ -56,7 +88,6 @@ function Dashboard({ user }) {
         const errData = await response.json();
         throw new Error(errData.error || 'Failed to update request');
       }
-      fetchData();
     } catch (error) {
       alert(error.message);
     }
@@ -72,7 +103,6 @@ function Dashboard({ user }) {
         body: JSON.stringify({ userId: user.uid })
       });
       if (!response.ok) throw new Error('Failed to cancel ride');
-      fetchData();
     } catch (error) {
       alert(error.message);
     }
@@ -86,7 +116,6 @@ function Dashboard({ user }) {
         body: JSON.stringify({ rideId: ride.id, userId: user.uid, satisfied: options.satisfied })
       });
       if (!response.ok) throw new Error('Failed to finish ride');
-      fetchData();
     } catch (error) {
       alert(error.message);
     }

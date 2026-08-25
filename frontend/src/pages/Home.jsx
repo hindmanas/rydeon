@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { db } from '../services/firebase';
-import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc, query, where, onSnapshot } from 'firebase/firestore';
 import RideCard from '../components/RideCard';
 import toast from 'react-hot-toast';
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+const rawBase = import.meta.env.VITE_API_BASE;
+const API_BASE = typeof rawBase === 'string' ? rawBase.trim().replace(/^['"]|['"]$/g, '') : rawBase;
 
 function Home({ user }) {
   const [rides, setRides] = useState([]);
@@ -22,6 +23,25 @@ function Home({ user }) {
   });
   const [submitting, setSubmitting] = useState(false);
 
+  const [requestedRideIds, setRequestedRideIds] = useState(new Set());
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    const q = query(
+      collection(db, 'ride_requests'),
+      where('requesterId', '==', user.uid),
+      where('status', '==', 'pending')
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const ids = new Set();
+      snapshot.docs.forEach(doc => {
+        ids.add(doc.data().rideId);
+      });
+      setRequestedRideIds(ids);
+    });
+    return () => unsubscribe();
+  }, [user]);
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -32,21 +52,29 @@ function Home({ user }) {
       }
     };
     if (user?.uid) fetchUser();
+  }, [user]);
 
-    const fetchRides = async () => {
-      try {
-        const url = user?.uid ? `${API_BASE}/rides?uid=${user.uid}` : `${API_BASE}/rides`;
-        const response = await fetch(url);
-        const data = await response.json();
-        if (response.ok) setRides(data);
-      } catch (err) {
-        console.error('Failed to fetch rides via API', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  useEffect(() => {
+    const q = query(collection(db, 'rides'));
 
-    fetchRides();
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      let ridesList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // Sort by createdAt desc in memory
+      ridesList.sort((a, b) => {
+        const t1 = a.createdAt?.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt || 0).getTime();
+        const t2 = b.createdAt?.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt || 0).getTime();
+        return t2 - t1;
+      });
+
+      setRides(ridesList);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error listening to rides:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, [user]);
 
   const handleRequestRide = async (ride) => {
@@ -59,7 +87,10 @@ function Home({ user }) {
           requesterId: user.uid,
           requesterName: user.displayName || user.email.split('@')[0],
           driverId: ride.driverId,
-          driverName: ride.driverName
+          driverName: ride.driverName,
+          pickup: ride.pickup,
+          dropoff: ride.dropoff,
+          time: ride.time
         })
       });
 
@@ -180,7 +211,13 @@ function Home({ user }) {
         ) : (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {rides.map(ride => (
-              <RideCard key={ride.id} ride={ride} currentUserId={user.uid} onRequest={handleRequestRide} />
+              <RideCard 
+                key={ride.id} 
+                ride={ride} 
+                currentUserId={user.uid} 
+                isRequested={requestedRideIds.has(ride.id)} 
+                onRequest={handleRequestRide} 
+              />
             ))}
           </div>
         )}

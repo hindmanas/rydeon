@@ -26,7 +26,7 @@ const toastStyle = {
 /* ── Custom Channel Header ── */
 const CustomHeader = () => {
   const { channel } = useChannelStateContext();
-  const pickup  = channel?.data?.pickup;
+  const pickup = channel?.data?.pickup;
   const dropoff = channel?.data?.dropoff;
 
   return (
@@ -50,11 +50,11 @@ const CustomHeader = () => {
 
 /* ── Main Widget ── */
 export default function GlobalChatWidget({ user }) {
-  const [chatClient,    setChatClient]    = useState(null);
-  const [isOpen,        setIsOpen]        = useState(false);
-  const [hasUnread,     setHasUnread]     = useState(false);
+  const [chatClient, setChatClient] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasUnread, setHasUnread] = useState(false);
   const [activeChannel, setActiveChannel] = useState(null);
-  const [showList,      setShowList]      = useState(true);
+  const [showList, setShowList] = useState(true);
   const isOpenRef = useRef(isOpen);
 
   useEffect(() => { isOpenRef.current = isOpen; }, [isOpen]);
@@ -81,7 +81,7 @@ export default function GlobalChatWidget({ user }) {
   /* Init Stream */
   useEffect(() => {
     if (!user || !apiKey) return;
-    let client  = null;
+    let client = null;
     let mounted = true;
 
     const init = async () => {
@@ -93,8 +93,8 @@ export default function GlobalChatWidget({ user }) {
 
         await client.connectUser(
           {
-            id:    user.uid,
-            name:  user.displayName || user.email?.split('@')[0] || 'User',
+            id: user.uid,
+            name: user.displayName || user.email?.split('@')[0] || 'User',
             image: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=10b981&color=fff`,
           },
           token
@@ -126,7 +126,7 @@ export default function GlobalChatWidget({ user }) {
   if (!chatClient) return null;
 
   const filters = { members: { $in: [user.uid] } };
-  const sort    = { last_message_at: -1 };
+  const sort = { last_message_at: -1 };
 
   return (
     <>
@@ -137,7 +137,7 @@ export default function GlobalChatWidget({ user }) {
             <div className="rydeon-panel-header-left">
               {!showList && (
                 <button className="rydeon-back-btn" onClick={() => setShowList(true)}>
-                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width:14,height:14}}>
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ width: 14, height: 14 }}>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                   </svg>
                 </button>
@@ -146,7 +146,7 @@ export default function GlobalChatWidget({ user }) {
               <span className="rydeon-panel-title">Messages</span>
             </div>
             <button className="rydeon-close-btn" onClick={() => setIsOpen(false)}>
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width:18,height:18}}>
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ width: 18, height: 18 }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -177,7 +177,7 @@ export default function GlobalChatWidget({ user }) {
                 ) : (
                   <div className="rydeon-empty-state">
                     <div className="rydeon-empty-icon">
-                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width:26,height:26,opacity:0.8}}>
+                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ width: 26, height: 26, opacity: 0.8 }}>
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                           d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                       </svg>
@@ -199,11 +199,11 @@ export default function GlobalChatWidget({ user }) {
         aria-label="Toggle chat"
       >
         {isOpen ? (
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width:22,height:22}}>
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ width: 22, height: 22 }}>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width:22,height:22}}>
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ width: 22, height: 22 }}>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>

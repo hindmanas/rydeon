@@ -8,5 +8,6 @@ router.post('/join-ride', rideController.joinRide);
 router.delete('/:id', rideController.deleteRide);
 router.get('/user-rides/:uid', rideController.getUserRides);
 router.post('/finish-ride', rideController.finishRide);
+router.post('/demo-login', rideController.demoLogin);
 
 module.exports = router;

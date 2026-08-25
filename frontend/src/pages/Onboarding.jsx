@@ -4,7 +4,7 @@ import { auth, db, updateUserPassword } from '../services/firebase';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 
-function Onboarding({ user }) {
+function Onboarding({ user, setOnboarded }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: user?.displayName || '',
@@ -87,6 +87,9 @@ function Onboarding({ user }) {
         createdAt: new Date()
       }, { merge: true });
 
+      if (setOnboarded) {
+        setOnboarded();
+      }
       toast.success('Welcome to Rydeon!');
       navigate('/dashboard');
     } catch (err) {

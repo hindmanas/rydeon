@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from './services/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { Toaster } from 'react-hot-toast';
 
 import Navbar from './components/Navbar';
@@ -17,26 +17,7 @@ import Onboarding from './pages/Onboarding';
 import Profile from './pages/Profile';
 
 // Wrapper to enforce onboarding globally on authenticated routes
-const RequireOnboarding = ({ user, children }) => {
-  const [isOnboarded, setIsOnboarded] = useState(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    const checkOnboarding = async () => {
-      try {
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (isMounted) {
-          setIsOnboarded(userDoc.exists() && userDoc.data().onboarded === true);
-        }
-      } catch (err) {
-        console.error("Failed to fetch onboarding status", err);
-        if (isMounted) setIsOnboarded(false);
-      }
-    };
-    checkOnboarding();
-    return () => { isMounted = false; };
-  }, [user]);
-
+const RequireOnboarding = ({ isOnboarded, children }) => {
   if (isOnboarded === null) {
      return <div className="flex h-screen items-center justify-center text-brand-400 font-medium">Verifying profile...</div>;
   }
@@ -50,11 +31,36 @@ const RequireOnboarding = ({ user, children }) => {
 
 function App() {
   const [user, setUser] = useState(null);
+  const [isOnboarded, setIsOnboarded] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        try {
+          const userRef = doc(db, 'users', currentUser.uid);
+          const userDoc = await getDoc(userRef);
+          if (currentUser.uid === 'demo-user-teamrydeon' && !userDoc.exists()) {
+            await setDoc(userRef, {
+              fullName: 'Team Rydeon',
+              email: currentUser.email,
+              gender: 'male',
+              mobile: '+91 9999999999',
+              onboarded: true,
+              createdAt: new Date().toISOString()
+            });
+            setIsOnboarded(true);
+          } else {
+            setIsOnboarded(userDoc.exists() && userDoc.data().onboarded === true);
+          }
+        } catch (err) {
+          console.error("Failed to fetch onboarding status", err);
+          setIsOnboarded(false);
+        }
+      } else {
+        setIsOnboarded(null);
+      }
       setLoading(false);
     });
     return () => unsubscribe();
@@ -83,7 +89,7 @@ function App() {
       <Routes>
         <Route path="/" element={user ? (
           <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
-            <RequireOnboarding user={user}><Home user={user} /></RequireOnboarding>
+            <RequireOnboarding isOnboarded={isOnboarded}><Home user={user} /></RequireOnboarding>
           </div>
         ) : <Landing />} />
         
@@ -99,23 +105,23 @@ function App() {
         } />
         <Route path="/onboarding" element={
           <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
-            {user ? <Onboarding user={user} /> : <Navigate to="/login" />}
+            {user ? <Onboarding user={user} setOnboarded={() => setIsOnboarded(true)} /> : <Navigate to="/login" />}
           </div>
         } />
         
         <Route path="/create" element={
           <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
-            {user ? <RequireOnboarding user={user}><CreateRide user={user} /></RequireOnboarding> : <Navigate to="/login" />}
+            {user ? <RequireOnboarding isOnboarded={isOnboarded}><CreateRide user={user} /></RequireOnboarding> : <Navigate to="/login" />}
           </div>
         } />
         <Route path="/dashboard" element={
           <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
-            {user ? <RequireOnboarding user={user}><Dashboard user={user} /></RequireOnboarding> : <Navigate to="/login" />}
+            {user ? <RequireOnboarding isOnboarded={isOnboarded}><Dashboard user={user} /></RequireOnboarding> : <Navigate to="/login" />}
           </div>
         } />
         <Route path="/profile" element={
           <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
-            {user ? <RequireOnboarding user={user}><Profile user={user} /></RequireOnboarding> : <Navigate to="/login" />}
+            {user ? <RequireOnboarding isOnboarded={isOnboarded}><Profile user={user} /></RequireOnboarding> : <Navigate to="/login" />}
           </div>
         } />
       </Routes>

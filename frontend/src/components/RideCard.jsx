@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function RideCard({ ride, currentUserId, onRequest, onCancel, onFinish }) {
+function RideCard({ ride, currentUserId, isRequested, onRequest, onCancel, onFinish }) {
   const [loading, setLoading] = useState(false);
   const [localRequested, setLocalRequested] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
@@ -9,6 +9,7 @@ function RideCard({ ride, currentUserId, onRequest, onCancel, onFinish }) {
   const hasJoined = ride.riders?.some(r => r.userId === currentUserId);
   const isFull = ride.seats <= 0;
   const dateText = new Date(ride.time).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+  const isPending = isRequested || localRequested;
 
   const handleRequest = async () => {
     setLoading(true);
@@ -116,7 +117,7 @@ function RideCard({ ride, currentUserId, onRequest, onCancel, onFinish }) {
               {onFinish && <button onClick={() => setShowFinishModal(true)} className="flex-1 px-4 py-2.5 text-sm font-bold text-blue-700 hover:bg-blue-50">Finish</button>}
             </div>
           </div>
-        ) : localRequested ? (
+        ) : isPending ? (
           <button disabled className="w-full rounded-xl border border-indigo-200 bg-indigo-50 py-3 text-sm font-bold text-indigo-700">Request pending</button>
         ) : isFull ? (
           <button disabled className="w-full rounded-xl border border-slate-200 bg-slate-100 py-3 text-sm font-bold text-slate-400">Ride full</button>

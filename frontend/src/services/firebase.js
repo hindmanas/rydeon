@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updatePassword } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updatePassword, signInWithCustomToken } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 // TODO: Replace with your Firebase config from Firebase Console
@@ -22,4 +22,5 @@ export const loginWithGoogle = () => signInWithPopup(auth, googleProvider);
 export const loginWithEmail = (email, password) => signInWithEmailAndPassword(auth, email, password);
 export const signupWithEmail = (email, password) => createUserWithEmailAndPassword(auth, email, password);
 export const updateUserPassword = (user, newPassword) => updatePassword(user, newPassword);
+export const loginWithCustomToken = (token) => signInWithCustomToken(auth, token);
 export const logout = () => signOut(auth);

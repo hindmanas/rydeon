@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { loginWithGoogle, loginWithEmail, logout } from '../services/firebase';
+import { loginWithGoogle, loginWithEmail, logout, loginWithCustomToken } from '../services/firebase';
 import { db } from '../services/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
@@ -59,6 +59,45 @@ function Login() {
 
     setLoading(true);
     try {
+      if (email === 'teamrydeon@gmail.com' && password === '12345678') {
+        const rawBase = import.meta.env.VITE_API_BASE || 'https://rydeon-backend-xdbl.onrender.com/api';
+        const API_BASE = typeof rawBase === 'string' ? rawBase.trim().replace(/^['"]|['"]$/g, '') : rawBase;
+        
+        try {
+          const response = await fetch(`${API_BASE}/rides/demo-login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          if (response.ok) {
+            const { token } = await response.json();
+            await loginWithCustomToken(token);
+            toast.success("Login successful!");
+            navigate('/');
+            return;
+          } else {
+            // Try fallback without /rides subpath in case routing changes
+            const fallbackRes = await fetch(`${API_BASE}/demo-login`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+            });
+            if (fallbackRes.ok) {
+              const { token } = await fallbackRes.json();
+              await loginWithCustomToken(token);
+              toast.success("Login successful!");
+              navigate('/');
+              return;
+            } else {
+              const errData = await fallbackRes.json();
+              throw new Error(errData.error || 'Failed to authenticate');
+            }
+          }
+        } catch (fetchErr) {
+          console.warn("Custom token login fetch failed. Trying direct email login fallback...", fetchErr);
+        }
+      }
+
       const result = await loginWithEmail(email, password);
       const user = result.user;
 

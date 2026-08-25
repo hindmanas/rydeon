@@ -32,15 +32,14 @@ exports.getAllRides = async (req, res) => {
         if (!db) return res.status(500).json({ error: "Database not initialized" });
         const { uid } = req.query;
         
-        let userGender = null;
+        let userGenderPromise = Promise.resolve(null);
         if (uid) {
-            const userDoc = await db.collection('users').doc(uid).get();
-            if (userDoc.exists) {
-                userGender = userDoc.data().gender;
-            }
+            userGenderPromise = db.collection('users').doc(uid).get().then(doc => doc.exists ? doc.data().gender : null);
         }
 
-        const snapshot = await db.collection('rides').orderBy('createdAt', 'desc').get();
+        const ridesPromise = db.collection('rides').orderBy('createdAt', 'desc').limit(100).get();
+
+        const [userGender, snapshot] = await Promise.all([userGenderPromise, ridesPromise]);
         let rides = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         // Filter rides
@@ -137,14 +136,14 @@ exports.getUserRides = async (req, res) => {
         const { uid } = req.params;
         if (!db) return res.status(500).json({ error: "Database not initialized" });
 
-        // Rides created by user
-        const createdSnapshot = await db.collection('rides').where('driverId', '==', uid).get();
+        const [createdSnapshot, joinedSnapshot] = await Promise.all([
+            db.collection('rides').where('driverId', '==', uid).get(),
+            db.collection('rides').where('riderIds', 'array-contains', uid).get()
+        ]);
+
         const createdRides = createdSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        // Optimized query checking if the user is in the riderIds array
         let joinedRides = [];
-        const joinedSnapshot = await db.collection('rides').where('riderIds', 'array-contains', uid).get();
-        
         if (!joinedSnapshot.empty) {
             joinedRides = joinedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         } else {
@@ -177,5 +176,20 @@ exports.finishRide = async (req, res) => {
     } catch (error) {
         console.error("Error finishing ride:", error);
         res.status(500).json({ error: "Failed to finish ride" });
+    }
+};
+
+exports.demoLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (email === 'teamrydeon@gmail.com' && password === '12345678') {
+            if (!admin) return res.status(500).json({ error: "Firebase admin not initialized" });
+            const token = await admin.auth().createCustomToken('demo-user-teamrydeon');
+            return res.status(200).json({ token });
+        }
+        return res.status(400).json({ error: "Invalid credentials" });
+    } catch (error) {
+        console.error("Error generating custom token:", error);
+        return res.status(500).json({ error: "Failed to generate custom token" });
     }
 };

@@ -1,40 +1,114 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { logout, db } from '../services/firebase';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, updateDoc, writeBatch } from 'firebase/firestore';
 
 function Navbar({ user }) {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasUnread, setHasUnread] = useState(false);
+  const [prevNotifCount, setPrevNotifCount] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
 
-    const q = query(
+    const q1 = query(
       collection(db, 'ride_requests'),
       where('driverId', '==', user.uid),
       where('status', '==', 'pending')
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const notifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      notifs.sort((a, b) => {
+    const q2 = query(
+      collection(db, 'ride_requests'),
+      where('requesterId', '==', user.uid)
+    );
+
+    let notifs1 = [];
+    let notifs2 = [];
+
+    const updateNotifs = () => {
+      const incomingNotifs = notifs1.filter(n => !n.seenByDriver);
+      const outgoingNotifs = notifs2.filter(
+        (n) => (n.status === 'accepted' || n.status === 'rejected') && !n.seenByRequester
+      );
+      const combined = [...incomingNotifs, ...outgoingNotifs];
+      combined.sort((a, b) => {
         const t1 = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
         const t2 = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
         return t2 - t1;
       });
-      setNotifications(notifs);
+      setNotifications(combined);
+    };
+
+    const unsubscribe1 = onSnapshot(q1, (snapshot) => {
+      notifs1 = snapshot.docs.map(doc => ({ id: doc.id, type: 'incoming', ...doc.data() }));
+      updateNotifs();
     });
 
-    return () => unsubscribe();
+    const unsubscribe2 = onSnapshot(q2, (snapshot) => {
+      notifs2 = snapshot.docs.map(doc => ({ id: doc.id, type: 'outgoing', ...doc.data() }));
+      updateNotifs();
+    });
+
+    return () => {
+      unsubscribe1();
+      unsubscribe2();
+    };
   }, [user]);
 
-  const handleNotificationClick = () => {
+  useEffect(() => {
+    const hasUnreadNotifs = notifications.some(n => 
+      (n.type === 'incoming' && !n.seenByDriver) || 
+      (n.type === 'outgoing' && !n.seenByRequester)
+    );
+    if (hasUnreadNotifs) {
+      setHasUnread(true);
+    }
+  }, [notifications]);
+
+  const handleDropdownToggle = () => {
+    setShowDropdown(!showDropdown);
+    if (!showDropdown) {
+      setHasUnread(false);
+    }
+  };
+
+  const handleClearAll = async () => {
+    try {
+      const batch = writeBatch(db);
+      notifications.forEach(notif => {
+        const reqRef = doc(db, 'ride_requests', notif.id);
+        if (notif.type === 'outgoing') {
+          batch.update(reqRef, { seenByRequester: true });
+        } else {
+          batch.update(reqRef, { seenByDriver: true });
+        }
+      });
+      await batch.commit();
+      setNotifications([]);
+    } catch (err) {
+      console.error('Failed to clear notifications:', err);
+    }
+  };
+
+  const handleNotificationClick = async (notif) => {
     setShowDropdown(false);
     setIsMobileMenuOpen(false);
+
+    try {
+      const reqRef = doc(db, 'ride_requests', notif.id);
+      if (notif.type === 'outgoing') {
+        await updateDoc(reqRef, { seenByRequester: true });
+      } else {
+        await updateDoc(reqRef, { seenByDriver: true });
+      }
+    } catch (err) {
+      console.error('Failed to dismiss notification:', err);
+    }
+
     navigate('/dashboard');
   };
 
@@ -62,35 +136,68 @@ function Navbar({ user }) {
         <div className="hidden items-center gap-3 md:flex">
           <div className="relative">
             <button
-              onClick={() => setShowDropdown(!showDropdown)}
+              onClick={handleDropdownToggle}
               className="relative grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition-colors hover:text-slate-950"
               aria-label="Notifications"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 00-4-5.7V5a2 2 0 10-4 0v.3A6 6 0 006 11v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1" />
               </svg>
-              {notifications.length > 0 && <span className="absolute -right-1 -top-1 h-5 min-w-5 rounded-full bg-rose-500 px-1 text-xs font-bold leading-5 text-white">{notifications.length}</span>}
+              {hasUnread && notifications.length > 0 && <span className="absolute -right-1 -top-1 h-5 min-w-5 rounded-full bg-rose-500 px-1 text-xs font-bold leading-5 text-white">{notifications.length}</span>}
             </button>
 
             {showDropdown && (
               <div className="absolute right-0 top-12 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10">
                 <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
                   <h3 className="font-bold text-slate-950">Ride requests</h3>
-                  <span className="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-bold text-teal-700">{notifications.length} new</span>
+                  <div className="flex items-center gap-2">
+                    {notifications.length > 0 && (
+                      <button onClick={handleClearAll} className="text-xs font-bold text-slate-500 hover:text-rose-600 transition-colors">
+                        Clear all
+                      </button>
+                    )}
+                    <span className="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-bold text-teal-700">{notifications.length} new</span>
+                  </div>
                 </div>
                 {notifications.length === 0 ? (
                   <div className="px-4 py-6 text-center text-sm text-slate-500">No new notifications</div>
                 ) : (
                   <div className="max-h-80 overflow-y-auto">
-                    {notifications.map(notif => (
-                      <button key={notif.id} onClick={handleNotificationClick} className="flex w-full gap-3 border-b border-slate-100 px-4 py-3 text-left transition-colors last:border-0 hover:bg-slate-50">
-                        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-100 font-bold text-slate-700">{notif.requesterName?.charAt(0) || 'U'}</span>
-                        <span className="min-w-0">
-                          <span className="block truncate text-sm font-semibold text-slate-950">{notif.requesterName} wants to join</span>
-                          <span className="mt-1 block text-xs font-medium text-teal-700">Review in dashboard</span>
-                        </span>
-                      </button>
-                    ))}
+                     {notifications.map(notif => {
+                      const isIncoming = notif.type === 'incoming';
+                      
+                      let title = "New ride request";
+                      let line1 = `${notif.requesterName} wants to join your ride.`;
+                      let line2 = notif.pickup && notif.dropoff ? `${notif.pickup} → ${notif.dropoff}` : 'Review in dashboard';
+                      let line3 = notif.time ? new Date(notif.time).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '';
+                      let badge = "🔴";
+
+                      if (!isIncoming) {
+                        if (notif.status === 'accepted') {
+                          title = "Seat confirmed! 🎉";
+                          line1 = `${notif.driverName} accepted your request.`;
+                          line2 = notif.pickup && notif.dropoff ? `${notif.pickup} → ${notif.dropoff}` : 'View in dashboard';
+                          badge = "💚";
+                        } else {
+                          title = "Request declined ❌";
+                          line1 = `${notif.driverName} declined your request.`;
+                          line2 = notif.pickup && notif.dropoff ? `${notif.pickup} → ${notif.dropoff}` : '';
+                          badge = "🖤";
+                        }
+                      }
+
+                      return (
+                        <button key={notif.id} onClick={() => handleNotificationClick(notif)} className="flex w-full gap-3 border-b border-slate-100 px-4 py-3 text-left transition-colors last:border-0 hover:bg-slate-50">
+                          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-50 font-bold text-slate-700">{badge}</span>
+                          <span className="min-w-0">
+                            <span className="block truncate text-sm font-semibold text-slate-950">{title}</span>
+                            <span className="block text-xs font-semibold text-slate-700 mt-1">{line1}</span>
+                            <span className="mt-0.5 block text-xs font-medium text-slate-500">{line2}</span>
+                            {line3 && <span className="block text-[10px] text-slate-400 mt-0.5">{line3}</span>}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
