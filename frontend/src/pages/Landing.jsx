@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import studentsRide from '../assets/students_ride.jpg';
 import studentsBook from '../assets/students_book.jpg';
 import phoneMock from '../assets/phone_mock.jpg';
-import ThreeDModel from '../components/ThreeDModel';
+import CampusNetwork from '../components/CampusNetwork';
 
 function Landing() {
   const navigate = useNavigate();
@@ -269,9 +269,9 @@ function Landing() {
             </p>
           </div>
 
-          {/* 3D Campus Connectivity Model */}
-          <div className="w-full rounded-2xl border border-neutral-200 shadow-md overflow-hidden relative bg-white p-2">
-            <ThreeDModel />
+          {/* Campus Connectivity Map */}
+          <div className="w-full rounded-2xl overflow-hidden relative shadow-xl">
+            <CampusNetwork />
           </div>
         </div>
       </section>
