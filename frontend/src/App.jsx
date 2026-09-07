@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from './services/firebase';
@@ -7,6 +7,13 @@ import { Toaster } from 'react-hot-toast';
 
 import Navbar from './components/Navbar';
 import Landing from './pages/Landing';
+import HowItWorks from './pages/HowItWorks';
+import Safety from './pages/Safety';
+import Hosts from './pages/Hosts';
+import Campuses from './pages/Campuses';
+import Resources from './pages/Resources';
+import About from './pages/About';
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -19,7 +26,7 @@ import Profile from './pages/Profile';
 // Wrapper to enforce onboarding globally on authenticated routes
 const RequireOnboarding = ({ isOnboarded, children }) => {
   if (isOnboarded === null) {
-     return <div className="flex h-screen items-center justify-center text-brand-400 font-medium">Verifying profile...</div>;
+     return <div className="flex h-screen items-center justify-center text-teal-600 font-medium">Verifying profile...</div>;
   }
 
   if (!isOnboarded) {
@@ -28,6 +35,15 @@ const RequireOnboarding = ({ isOnboarded, children }) => {
 
   return children;
 };
+
+// Helper component to conditionally render Header/Navbar except on onboarding
+function MainHeader({ user }) {
+  const location = useLocation();
+  if (location.pathname === '/onboarding') {
+    return null;
+  }
+  return <Navbar user={user} />;
+}
 
 function App() {
   const [user, setUser] = useState(null);
@@ -67,7 +83,7 @@ function App() {
   }, []);
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center text-white">Loading...</div>;
+    return <div className="flex h-screen items-center justify-center text-slate-900 font-bold">Loading Rydeon...</div>;
   }
 
   return (
@@ -80,19 +96,38 @@ function App() {
           borderRadius: '16px',
         },
       }} />
-      {/* Hide Navbar during explicit onboarding so they don't jump around */}
-      {user && <Routes><Route path="/onboarding" element={null} /> <Route path="*" element={<Navbar user={user} />} /></Routes>}
-      
-      {/* Hide Chat during onboarding */}
-      {user && <Routes><Route path="/onboarding" element={null} /> <Route path="*" element={<GlobalChatWidget user={user} />} /></Routes>}
+
+      {/* Global Scroll-Responsive Header for all pages (except onboarding) */}
+      <MainHeader user={user} />
+
+      {/* Global Chat Widget for authenticated users */}
+      {user && (
+        <Routes>
+          <Route path="/onboarding" element={null} />
+          <Route path="*" element={<GlobalChatWidget user={user} />} />
+        </Routes>
+      )}
 
       <Routes>
+        {/* PUBLIC MARKETING & PRODUCT PAGES */}
         <Route path="/" element={user ? (
           <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
             <RequireOnboarding isOnboarded={isOnboarded}><Home user={user} /></RequireOnboarding>
           </div>
         ) : <Landing />} />
         
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/safety" element={<Safety />} />
+        <Route path="/hosts" element={<Hosts />} />
+        <Route path="/campuses" element={<Campuses />} />
+        <Route path="/resources" element={<Resources />} />
+        <Route path="/about" element={<About />} />
+
+        {/* ALIAS REDIRECT ROUTES FOR CTAs */}
+        <Route path="/find-rides" element={user ? <Navigate to="/" replace /> : <Navigate to="/signup" replace />} />
+        <Route path="/offer" element={user ? <Navigate to="/create" replace /> : <Navigate to="/hosts" replace />} />
+
+        {/* AUTHENTICATION & APP ROUTES */}
         <Route path="/login" element={
           <div className="container mx-auto w-full px-4 py-6 relative z-10 sm:py-8">
             {user ? <Navigate to="/" /> : <Login />}
