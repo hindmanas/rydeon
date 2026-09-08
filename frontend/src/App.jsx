@@ -51,7 +51,13 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+    const timer = setTimeout(() => {
+      if (isMounted) setLoading(false);
+    }, 3500);
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!isMounted) return;
       setUser(currentUser);
       if (currentUser) {
         try {
@@ -66,20 +72,26 @@ function App() {
               onboarded: true,
               createdAt: new Date().toISOString()
             });
-            setIsOnboarded(true);
+            if (isMounted) setIsOnboarded(true);
           } else {
-            setIsOnboarded(userDoc.exists() && userDoc.data().onboarded === true);
+            if (isMounted) setIsOnboarded(userDoc.exists() && userDoc.data().onboarded === true);
           }
         } catch (err) {
           console.error("Failed to fetch onboarding status", err);
-          setIsOnboarded(false);
+          if (isMounted) setIsOnboarded(false);
         }
       } else {
-        setIsOnboarded(null);
+        if (isMounted) setIsOnboarded(null);
       }
-      setLoading(false);
+      if (isMounted) setLoading(false);
+      clearTimeout(timer);
     });
-    return () => unsubscribe();
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+      unsubscribe();
+    };
   }, []);
 
   if (loading) {

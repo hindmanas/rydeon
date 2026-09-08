@@ -12,7 +12,7 @@ import {
 
 function Resources() {
   // Accordion open states
-  const [openFaq, setOpenFaq] = useState(null);
+  const [openFaq, setOpenFaq] = useState(1); // Default first FAQ open
 
   const faqs = [
     {
@@ -39,6 +39,21 @@ function Resources() {
       id: 5,
       question: "Can I reject a request?",
       answer: "Absolutely. As a host driver, you maintain full authority over who joins your vehicle. You can review applicant student profiles and accept or decline any request based on your comfort."
+    },
+    {
+      id: 6,
+      question: "How are student profiles verified?",
+      answer: "Students sign up using their official university .edu.in email domain address or upload their digital student ID card. Profiles display verified status badges."
+    },
+    {
+      id: 7,
+      question: "What happens if plans change?",
+      answer: "Either rider or host can cancel requests within the dashboard. If a confirmed ride is cancelled, seats update dynamically and notifications notify involved peers immediately."
+    },
+    {
+      id: 8,
+      question: "Are there commercial taxi surges or commissions?",
+      answer: "No! Rydeon is a peer split-cost network. Prices reflect standard shared fuel contributions without surging pricing or hidden platform commissions."
     }
   ];
 
@@ -76,14 +91,14 @@ function Resources() {
     <div className="min-h-screen bg-white text-slate-900 font-sans pb-20">
       
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-28 px-4 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white">
+      <section className="relative overflow-hidden pt-12 pb-16 sm:pt-20 sm:pb-24 px-4 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-950 text-white text-xs font-bold uppercase tracking-wider">
-            <NewspaperIcon className="w-4 h-4 text-teal-400" />
-            <span>Student Travel Resources</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950 text-white text-xs font-bold uppercase tracking-wider">
+            <img src="/logo.png" alt="Rydeon Logo" className="h-4 w-4 object-contain" />
+            <span>Student Travel Knowledge Base</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-950 tracking-tight leading-[1.1]">
+          <h1 className="text-4xl sm:text-6xl font-black text-slate-950 tracking-tight leading-[1.1]">
             Useful things for getting<br />
             <span className="text-teal-700"> around smarter.</span>
           </h1>
@@ -96,14 +111,14 @@ function Resources() {
 
       {/* RESOURCE CATEGORIES */}
       <section className="py-20 px-4 max-w-6xl mx-auto space-y-16">
-        <div className="text-center max-w-2xl mx-auto">
-          <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block mb-2">GUIDES & ARTICLES</span>
-          <h2 className="text-3xl font-extrabold text-slate-950">Everything you need to know</h2>
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block">GUIDES & ARTICLES</span>
+          <h2 className="text-3xl font-black text-slate-950">Everything you need to know</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {categories.map((cat, idx) => (
-            <div key={idx} className="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 space-y-6">
+            <div key={idx} className="bg-slate-50 border border-slate-200/80 rounded-3xl p-6 space-y-6">
               <div className="flex items-center gap-3 border-b border-slate-200/80 pb-4">
                 <span className="text-2xl">{cat.icon}</span>
                 <h3 className="font-extrabold text-slate-950 text-base">{cat.title}</h3>
@@ -111,10 +126,10 @@ function Resources() {
 
               <div className="space-y-4">
                 {cat.items.map((item, itemIdx) => (
-                  <div key={itemIdx} className="bg-white p-4 rounded-xl border border-slate-200/60 shadow-sm space-y-1 hover:border-slate-300 transition">
+                  <div key={itemIdx} className="bg-white p-4.5 rounded-2xl border border-slate-200/70 shadow-sm space-y-1 hover:border-slate-300 transition">
                     <h4 className="font-bold text-xs text-slate-950 flex items-center justify-between">
                       <span>{item.name}</span>
-                      <ArrowRightIcon className="w-3 h-3 text-slate-400 shrink-0" />
+                      <ArrowRightIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                     </h4>
                     <p className="text-[11px] text-slate-500 leading-relaxed">{item.desc}</p>
                   </div>
@@ -128,9 +143,9 @@ function Resources() {
       {/* EXPANDABLE FAQ ACCORDION SECTION */}
       <section className="py-16 px-4 bg-slate-50 border-t border-b border-slate-200/80">
         <div className="max-w-3xl mx-auto space-y-10">
-          <div className="text-center">
-            <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block mb-2">FREQUENTLY ASKED QUESTIONS</span>
-            <h2 className="text-3xl font-extrabold text-slate-950">Got questions? We've got answers.</h2>
+          <div className="text-center space-y-2">
+            <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block">FREQUENTLY ASKED QUESTIONS</span>
+            <h2 className="text-3xl font-black text-slate-950">Got questions? We've got answers.</h2>
           </div>
 
           {/* ACCORDION ITEMS */}
@@ -144,7 +159,7 @@ function Resources() {
                 >
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : faq.id)}
-                    className="w-full px-6 py-4 text-left font-bold text-slate-950 text-sm flex items-center justify-between gap-4 hover:bg-slate-50 transition"
+                    className="w-full px-6 py-4 text-left font-bold text-slate-950 text-xs sm:text-sm flex items-center justify-between gap-4 hover:bg-slate-50 transition"
                   >
                     <span>{faq.question}</span>
                     <ChevronDownIcon className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-teal-700' : ''}`} />
@@ -164,17 +179,20 @@ function Resources() {
 
       {/* BOTTOM HELP CTA */}
       <section className="mt-16 text-center max-w-xl mx-auto px-4 space-y-4">
-        <h3 className="font-extrabold text-slate-950 text-lg">Still have questions?</h3>
+        <div className="flex items-center justify-center gap-2">
+          <img src="/logo.png" alt="Rydeon Logo" className="h-6 w-6 object-contain" />
+          <h3 className="font-extrabold text-slate-950 text-base">Still have questions?</h3>
+        </div>
         <p className="text-xs text-slate-500">
           Contact our campus support team anytime at <a href="mailto:teamrydeon@gmail.com" className="font-bold text-teal-700 underline">teamrydeon@gmail.com</a>.
         </p>
         <div className="pt-2">
           <Link
             to="/signup"
-            className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-6 py-3 text-xs font-bold text-white shadow"
+            className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-7 py-3.5 text-xs font-bold text-white shadow"
           >
             <span>Get Started with Rydeon</span>
-            <ArrowRightIcon className="w-4 h-4" />
+            <ArrowRightIcon className="w-4 h-4 text-teal-400" />
           </Link>
         </div>
       </section>

@@ -10,6 +10,8 @@ import {
   ShieldCheckIcon
 } from '../components/icons';
 
+import campusStudentsWaiting from '../assets/campus_students_waiting.jpg';
+
 function Campuses() {
   const [showContactModal, setShowContactModal] = useState(false);
 
@@ -17,14 +19,14 @@ function Campuses() {
     <div className="min-h-screen bg-white text-slate-900 font-sans pb-20">
       
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-28 px-4 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white">
+      <section className="relative overflow-hidden pt-12 pb-16 sm:pt-20 sm:pb-24 px-4 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200/60 text-teal-800 text-xs font-bold uppercase tracking-wider">
-            <GraduationCapIcon className="w-4 h-4 text-teal-600" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 border border-teal-200/60 text-teal-800 text-xs font-extrabold uppercase tracking-wider">
+            <img src="/logo.png" alt="Rydeon Logo" className="h-4 w-4 object-contain" />
             <span>Campus Mobility Infrastructure</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-950 tracking-tight leading-[1.1]">
+          <h1 className="text-4xl sm:text-6xl font-black text-slate-950 tracking-tight leading-[1.1]">
             Make campus travel<br />
             <span className="text-teal-700"> more connected.</span>
           </h1>
@@ -36,27 +38,36 @@ function Campuses() {
           <div className="pt-4">
             <button
               onClick={() => setShowContactModal(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-slate-950 hover:bg-slate-800 px-7 py-3.5 text-sm font-bold text-white shadow-md transition-all"
+              className="inline-flex items-center gap-2 rounded-xl bg-slate-950 hover:bg-slate-800 px-7 py-3.5 text-sm font-extrabold text-white shadow-md transition-all"
             >
               <span>Bring Rydeon to Your Campus</span>
-              <ArrowRightIcon className="w-4 h-4" />
+              <ArrowRightIcon className="w-4 h-4 text-teal-400" />
             </button>
           </div>
         </div>
       </section>
 
-      {/* PROBLEM SECTION: FRAGMENTED CAMPUS TRAVEL */}
+      {/* PROBLEM SECTION WITH GENUINE CAMPUS PHOTO */}
       <section className="py-20 px-4 max-w-6xl mx-auto space-y-12">
-        <div className="text-center max-w-2xl mx-auto">
-          <span className="text-xs font-bold text-rose-600 uppercase tracking-widest block mb-2">THE STATUS QUO</span>
-          <h2 className="text-3xl font-extrabold text-slate-950">Campus transportation is fragmented</h2>
-          <p className="text-slate-500 text-sm mt-2">
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <span className="text-xs font-bold text-rose-600 uppercase tracking-widest block">THE STATUS QUO</span>
+          <h2 className="text-3xl font-black text-slate-950">Campus transportation is fragmented</h2>
+          <p className="text-slate-500 text-sm">
             Most student travel coordination currently happens through chaotic, unverified channels.
           </p>
         </div>
 
+        {/* PHOTO BANNER */}
+        <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-xl bg-slate-50 max-w-5xl mx-auto">
+          <img src={campusStudentsWaiting} alt="Students at campus entrance gate" className="w-full h-64 object-cover" />
+          <div className="absolute bottom-4 left-4 right-4 bg-slate-950/85 backdrop-blur text-white p-4 rounded-2xl text-xs space-y-1">
+            <p className="font-bold text-teal-400">🎓 Connecting University Campuses & Transit Hubs</p>
+            <p className="text-[11px] text-slate-300">Replacing disconnected WhatsApp groups with verified peer matching</p>
+          </div>
+        </div>
+
         {/* FRAGMENTED VS STRUCTURED FLOW */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           
           {/* OLD FRAGMENTED WAY */}
           <div className="bg-rose-50/50 border border-rose-200/60 rounded-3xl p-6 sm:p-8 space-y-4">
@@ -66,48 +77,45 @@ function Campuses() {
             </div>
 
             <div className="space-y-3 text-xs text-rose-900 font-medium">
-              <div className="bg-white p-3 rounded-xl border border-rose-100 shadow-sm flex items-center justify-between">
+              <div className="bg-white p-3.5 rounded-xl border border-rose-100 shadow-sm flex items-center justify-between">
                 <span>💬 15+ Disconnected WhatsApp Groups</span>
-                <span className="text-rose-500 font-bold">Spam & Noise</span>
+                <span className="text-rose-600 font-bold">Spam & Noise</span>
               </div>
-              <div className="bg-white p-3 rounded-xl border border-rose-100 shadow-sm flex items-center justify-between">
+              <div className="bg-white p-3.5 rounded-xl border border-rose-100 shadow-sm flex items-center justify-between">
                 <span>❓ Asking Friends of Friends</span>
-                <span className="text-rose-500 font-bold">Unreliable</span>
+                <span className="text-rose-600 font-bold">Unreliable</span>
               </div>
-              <div className="bg-white p-3 rounded-xl border border-rose-100 shadow-sm flex items-center justify-between">
+              <div className="bg-white p-3.5 rounded-xl border border-rose-100 shadow-sm flex items-center justify-between">
                 <span>📱 Random Phone Number Sharing</span>
-                <span className="text-rose-500 font-bold">Privacy Risks</span>
+                <span className="text-rose-600 font-bold">Privacy Risks</span>
               </div>
-              <div className="bg-white p-3 rounded-xl border border-rose-100 shadow-sm flex items-center justify-between">
+              <div className="bg-white p-3.5 rounded-xl border border-rose-100 shadow-sm flex items-center justify-between">
                 <span>🚕 Last-Minute Solo Cabs</span>
-                <span className="text-rose-500 font-bold">Expensive</span>
+                <span className="text-rose-600 font-bold">Expensive</span>
               </div>
             </div>
           </div>
 
           {/* THE RYDEON SOLUTION FLOW */}
-          <div className="bg-slate-950 text-white rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl">
+          <div className="bg-slate-950 text-white rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl border border-slate-800">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="font-extrabold text-white text-base">The Rydeon Flow</h3>
               <span className="text-[10px] bg-teal-500/20 text-teal-400 font-bold px-2.5 py-0.5 rounded-full border border-teal-500/40">Structured</span>
             </div>
 
-            <div className="flex flex-col gap-2 text-xs font-semibold">
+            <div className="flex flex-col gap-2.5 text-xs font-semibold">
               <div className="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-teal-300">
                 <span>1. Verified Students Only</span>
                 <span>✓ Domain & ID Check</span>
               </div>
-              <div className="text-center text-slate-600 text-[10px] font-bold">↓</div>
               <div className="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-white">
                 <span>2. Live Ride Directory</span>
                 <span>PCU to Station / Corridors</span>
               </div>
-              <div className="text-center text-slate-600 text-[10px] font-bold">↓</div>
               <div className="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-amber-300">
                 <span>3. Double-sided Requests</span>
                 <span>Host Approval</span>
               </div>
-              <div className="text-center text-slate-600 text-[10px] font-bold">↓</div>
               <div className="bg-teal-950 border border-teal-500 p-3 rounded-xl flex items-center justify-between text-white font-extrabold">
                 <span>4. Confirmed Passengers & Chat</span>
                 <span>In-app Sandbox</span>
@@ -121,10 +129,10 @@ function Campuses() {
       {/* LIGHTWEIGHT SVG CAMPUS NETWORK MAP */}
       <section className="py-16 px-4 bg-slate-50 border-t border-b border-slate-200/80">
         <div className="max-w-6xl mx-auto space-y-8">
-          <div className="text-center max-w-2xl mx-auto">
-            <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block mb-2">CAMPUS NETWORK TOPOLOGY</span>
-            <h2 className="text-3xl font-extrabold text-slate-950">Active institutes and key corridors</h2>
-            <p className="text-slate-500 text-sm mt-2">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block">CAMPUS NETWORK TOPOLOGY</span>
+            <h2 className="text-3xl font-black text-slate-950">Active institutes and key corridors</h2>
+            <p className="text-slate-500 text-sm">
               High-frequency commute paths connecting campus hubs, railway junctions, and airport nodes across Pune.
             </p>
           </div>
@@ -138,7 +146,7 @@ function Campuses() {
       <section className="py-20 px-4 max-w-6xl mx-auto space-y-12">
         <div className="text-center max-w-2xl mx-auto">
           <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block mb-2">COMMUNITY IMPACT</span>
-          <h2 className="text-3xl font-extrabold text-slate-950">Why institutes choose Rydeon</h2>
+          <h2 className="text-3xl font-black text-slate-950">Why institutes choose Rydeon</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -176,7 +184,11 @@ function Campuses() {
 
       {/* FINAL CTA */}
       <section className="mt-12 text-center max-w-4xl mx-auto px-4">
-        <div className="bg-slate-950 text-white p-10 sm:p-14 rounded-3xl space-y-6 shadow-xl">
+        <div className="bg-slate-950 text-white p-10 sm:p-14 rounded-3xl space-y-6 shadow-xl border border-slate-800">
+          <div className="flex items-center justify-center gap-2">
+            <img src="/logo.png" alt="Rydeon" className="h-6 w-6 object-contain" />
+            <span className="text-lg font-black text-white">Rydeon Campus Partner Program</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             Bring Rydeon to your campus
           </h2>
@@ -185,7 +197,7 @@ function Campuses() {
           </p>
           <button
             onClick={() => setShowContactModal(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 px-8 py-3.5 text-sm font-extrabold shadow-md transition"
+            className="inline-flex items-center gap-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 px-8 py-3.5 text-sm font-extrabold shadow transition"
           >
             <span>Talk to Us</span>
             <ArrowRightIcon className="w-4 h-4" />
@@ -198,7 +210,10 @@ function Campuses() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4" onClick={() => setShowContactModal(false)}>
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-extrabold text-slate-950 text-base">Campus Partnership Inquiry</h3>
+              <div className="flex items-center gap-2">
+                <img src="/logo.png" alt="Rydeon Logo" className="h-6 w-6 object-contain" />
+                <h3 className="font-extrabold text-slate-950 text-base">Campus Partnership</h3>
+              </div>
               <button onClick={() => setShowContactModal(false)} className="text-slate-400 hover:text-slate-950 text-sm font-bold">✕</button>
             </div>
 

@@ -8,8 +8,7 @@ import {
   CarFrontIcon,
   GraduationCapIcon,
   NewspaperIcon,
-  InfoIcon,
-  ChevronDownIcon
+  InfoIcon
 } from './icons';
 
 function Navbar({ user }) {
@@ -25,13 +24,13 @@ function Navbar({ user }) {
   // Handle scroll detection for compact nav transformation
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 55) {
+      if (window.scrollY > 60) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
       }
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -146,49 +145,70 @@ function Navbar({ user }) {
   ];
 
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/95 shadow-sm border-b border-slate-200/80 backdrop-blur-md py-1.5' : 'bg-white/90 border-b border-slate-100 backdrop-blur-md py-3'}`}>
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className={`rydeon-header ${isScrolled ? 'compact' : 'expanded'} flex items-center`}>
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         
-        {/* LOGO */}
+        {/* LOGO WITH OFFICIAL RYDEON BRANDING */}
         <Link to="/" className="flex items-center gap-2.5 shrink-0 focus:outline-none group">
-          <div className="grid h-9 w-9 place-items-center rounded-xl bg-slate-950 text-white shadow-sm transition-transform group-hover:scale-105">
-            <span className="text-base font-extrabold tracking-wider">R</span>
+          <div className="relative overflow-hidden rounded-xl bg-white p-1 shadow-sm border border-slate-200/80 transition-transform group-hover:scale-105">
+            <img
+              src="/logo.png"
+              alt="Rydeon Logo"
+              className="h-8 w-8 object-contain"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+            <div className="hidden h-8 w-8 items-center justify-center rounded-lg bg-slate-950 text-white font-black text-sm">
+              R
+            </div>
           </div>
-          <span className="text-lg font-black tracking-tight text-slate-950">Rydeon</span>
+          <span className="text-xl font-black tracking-tight text-slate-950">Rydeon</span>
         </Link>
 
         {/* DESKTOP NAVIGATION ITEMS */}
-        <nav className={`hidden md:flex items-center gap-1 rounded-2xl bg-slate-100/70 p-1.5 border border-slate-200/60 transition-all duration-300 ${isScrolled ? 'shadow-inner' : ''}`}>
+        <nav className="hidden md:flex rydeon-nav-container">
           {mainNavItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.Icon;
             return (
-              <Link
-                key={item.path}
-                to={item.path}
-                title={item.label}
-                className={`relative flex items-center justify-center rounded-xl px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all duration-300 ${
-                  isActive
-                    ? 'bg-slate-950 text-white shadow-sm'
-                    : 'text-slate-600 hover:bg-white hover:text-slate-950'
-                }`}
-              >
-                <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-teal-400' : 'text-slate-500 group-hover:text-slate-900'}`} />
-                <span className={`nav-label ${isScrolled ? 'nav-label-collapsed' : ''}`}>
-                  {item.label}
-                </span>
-              </Link>
+              <div key={item.path} className="relative nav-item-group flex items-center">
+                <Link
+                  to={item.path}
+                  className={`relative flex items-center justify-center rounded-xl px-3 py-1.5 text-xs sm:text-sm font-bold transition-all duration-300 ${
+                    isActive
+                      ? 'bg-slate-950 text-white shadow-sm'
+                      : 'text-slate-600 hover:bg-white hover:text-slate-950'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-teal-400' : 'text-slate-500 group-hover:text-slate-900'}`} />
+                  <span className={`nav-label ${isScrolled ? 'nav-label-collapsed' : ''}`}>
+                    {item.label}
+                  </span>
+                </Link>
+                {/* Floating Tooltip in compact state */}
+                {isScrolled && (
+                  <div className="nav-item-tooltip">
+                    {item.label}
+                  </div>
+                )}
+              </div>
             );
           })}
         </nav>
 
         {/* RIGHT ACTION BUTTONS / USER PROFILE */}
-        <div className="hidden md:flex items-center gap-3 shrink-0">
+        <div className="hidden md:flex items-center gap-2.5 shrink-0">
           {user ? (
             <>
               <Link
                 to="/dashboard"
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-colors ${location.pathname === '/dashboard' ? 'bg-teal-600 text-white' : 'text-slate-700 bg-slate-100 hover:bg-slate-200'}`}
+                className={`rounded-xl font-bold transition-all ${
+                  isScrolled ? 'px-3 py-1.5 text-xs' : 'px-3.5 py-2 text-xs'
+                } ${
+                  location.pathname === '/dashboard' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-700 bg-slate-100 hover:bg-slate-200'
+                }`}
               >
                 Dashboard
               </Link>
@@ -200,7 +220,7 @@ function Navbar({ user }) {
                   className="relative grid h-9 w-9 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition-colors hover:text-slate-950"
                   aria-label="Notifications"
                 >
-                  <svg className="h-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 00-4-5.7V5a2 2 0 10-4 0v.3A6 6 0 006 11v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1" />
                   </svg>
                   {hasUnread && notifications.length > 0 && (
@@ -280,20 +300,26 @@ function Navbar({ user }) {
           ) : (
             <>
               <Link
-                to="/signup"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-950"
+                to="/find-rides"
+                className={`inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-950 ${
+                  isScrolled ? 'px-3 py-1.5 text-xs' : 'px-3.5 py-2 text-xs'
+                }`}
               >
                 <span>Find a Ride</span>
               </Link>
               <Link
-                to="/hosts"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-950"
+                to="/offer"
+                className={`inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 hover:text-slate-950 ${
+                  isScrolled ? 'px-3 py-1.5 text-xs' : 'px-3.5 py-2 text-xs'
+                }`}
               >
                 <span>Offer a Ride</span>
               </Link>
               <Link
                 to="/login"
-                className="inline-flex items-center justify-center rounded-xl bg-slate-950 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-slate-800"
+                className={`inline-flex items-center justify-center rounded-xl bg-slate-950 font-bold text-white shadow-sm transition-all hover:bg-slate-800 ${
+                  isScrolled ? 'px-3.5 py-1.5 text-xs' : 'px-4 py-2 text-xs'
+                }`}
               >
                 Log in
               </Link>
@@ -319,7 +345,7 @@ function Navbar({ user }) {
 
       {/* MOBILE EXPANDED MENU */}
       {isMobileMenuOpen && (
-        <div className="border-t border-slate-200 bg-white px-4 py-4 md:hidden shadow-xl animate-in fade-in slide-in-from-top-2">
+        <div className="border-t border-slate-200 bg-white px-4 py-4 md:hidden shadow-2xl animate-in fade-in slide-in-from-top-2">
           {user && (
             <div className="mb-4 flex items-center gap-3 rounded-xl bg-slate-50 p-3">
               <img
