@@ -12,6 +12,7 @@ function Dashboard({ user }) {
   const [joinedRides, setJoinedRides] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('OFFERED'); // 'OFFERED' | 'REQUESTED' | 'LOOKING'
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -121,108 +122,176 @@ function Dashboard({ user }) {
     }
   };
 
-  if (loading) return <div className="mt-20 text-center text-slate-500">Loading your dashboard...</div>;
+  if (loading) return <div className="mt-20 text-center text-[#1683F8] font-bold">Loading your mobility dashboard...</div>;
 
   const activeCreated = createdRides.filter(ride => !ride.completedBy?.includes(user.uid));
   const activeJoined = joinedRides.filter(ride => !ride.completedBy?.includes(user.uid));
+  const userName = user.displayName || user.email?.split('@')[0] || 'Student';
 
   return (
-    <main className="fade-in space-y-8">
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <main className="fade-in space-y-8 pb-16">
+      
+      {/* MOBILITY CONTROL CENTER HEADER (Requirement 11) */}
+      <section className="rounded-3xl border border-[#DCE5F0] bg-white p-6 shadow-sm sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
-            <p className="text-sm font-bold uppercase text-teal-700">Driver console</p>
-            <h1 className="mt-2 text-3xl font-extrabold text-slate-950 sm:text-4xl">Manage rides and requests</h1>
-            <p className="mt-2 max-w-2xl text-sm font-medium text-slate-500">A cleaner reference dashboard with strong hierarchy, useful counts, and fewer decorative effects.</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[#1683F8]">Mobility Control Center</p>
+            <h1 className="mt-2 text-3xl font-black text-[#101D3A] sm:text-4xl">Good morning, {userName} 👋</h1>
+            <p className="mt-1 text-xs font-medium text-[#65728A]">Find your next ride or manage your routes.</p>
           </div>
           <div className="flex gap-3">
-            <Link to="/" className="btn-secondary">Find rides</Link>
-            <Link to="/create" className="btn-primary">Offer ride</Link>
+            <Link to="/" className="btn-secondary">Find a Ride</Link>
+            <Link to="/create" className="btn-primary">Offer a Ride</Link>
           </div>
         </div>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <p className="text-sm font-bold text-slate-500">Pending requests</p>
-            <p className="mt-2 text-3xl font-extrabold text-slate-950">{pendingRequests.length}</p>
+        {/* SMALL CLEAN STAT CARDS */}
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="rounded-2xl border border-[#DCE5F0] bg-[#F7FAFE] p-4">
+            <p className="text-xs font-bold uppercase text-[#65728A]">Pending Requests</p>
+            <p className="mt-1.5 text-3xl font-black text-[#1683F8]">{pendingRequests.length}</p>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <p className="text-sm font-bold text-slate-500">Offered rides</p>
-            <p className="mt-2 text-3xl font-extrabold text-slate-950">{activeCreated.length}</p>
+          <div className="rounded-2xl border border-[#DCE5F0] bg-[#F7FAFE] p-4">
+            <p className="text-xs font-bold uppercase text-[#65728A]">Rides Offered</p>
+            <p className="mt-1.5 text-3xl font-black text-[#101D3A]">{activeCreated.length}</p>
           </div>
-          <div className="rounded-2xl bg-teal-50 p-4">
-            <p className="text-sm font-bold text-teal-700">Joined rides</p>
-            <p className="mt-2 text-3xl font-extrabold text-teal-900">{activeJoined.length}</p>
+          <div className="rounded-2xl border border-[#DCE5F0] bg-[#EEF7FF] p-4">
+            <p className="text-xs font-bold uppercase text-[#1683F8]">Upcoming Joined</p>
+            <p className="mt-1.5 text-3xl font-black text-[#1683F8]">{activeJoined.length}</p>
           </div>
         </div>
       </section>
 
-      <section>
-        <div className="mb-4 flex items-end justify-between border-b border-slate-200 pb-4">
-          <div>
-            <h2 className="text-2xl font-extrabold text-slate-950">Pending requests</h2>
-            <p className="mt-1 text-sm font-medium text-slate-500">Students asking to join your rides.</p>
+      {/* RIDE REQUESTS SECTION */}
+      {pendingRequests.length > 0 && (
+        <section className="rounded-3xl border border-[#DCE5F0] bg-white p-6 shadow-sm">
+          <div className="mb-5 flex items-center justify-between border-b border-[#DCE5F0] pb-4">
+            <div>
+              <h2 className="text-xl font-black text-[#101D3A]">Pending Ride Requests</h2>
+              <p className="mt-0.5 text-xs text-[#65728A]">Students waiting for your confirmation.</p>
+            </div>
+            <span className="rounded-full bg-[#F2A900]/10 border border-[#F2A900]/20 px-3 py-1 text-xs font-extrabold text-[#F2A900] uppercase tracking-wider">
+              {pendingRequests.length} Pending
+            </span>
           </div>
-        </div>
-        {pendingRequests.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm font-semibold text-slate-500">No pending requests at the moment.</div>
-        ) : (
+
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {pendingRequests.map(req => {
               const ride = createdRides.find(r => r.id === req.rideId);
               return (
-                <div key={req.id} className="card">
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="grid h-11 w-11 place-items-center rounded-xl bg-teal-50 font-extrabold text-teal-700">{req.requesterName.charAt(0)}</div>
+                <div key={req.id} className="rounded-2xl border border-[#DCE5F0] bg-[#F7FAFE] p-4 shadow-sm">
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#EEF7FF] font-black text-[#1683F8] text-sm">
+                      {req.requesterName.charAt(0).toUpperCase()}
+                    </div>
                     <div className="min-w-0">
-                      <h3 className="truncate font-extrabold text-slate-950">{req.requesterName}</h3>
-                      <p className="text-sm font-medium text-slate-500">wants to join</p>
+                      <h3 className="truncate text-sm font-extrabold text-[#101D3A]">{req.requesterName}</h3>
+                      <p className="text-[11px] font-semibold text-[#65728A]">Student Request</p>
                     </div>
                   </div>
+
                   {ride && (
-                    <div className="mb-4 rounded-2xl bg-slate-50 p-4 text-sm">
-                      <p className="truncate font-extrabold text-slate-950">{ride.pickup} to {ride.dropoff}</p>
-                      <p className="mt-1 font-semibold text-teal-700">{new Date(ride.time).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                    <div className="mb-4 rounded-xl border border-[#DCE5F0] bg-white p-3 text-xs">
+                      <p className="truncate font-bold text-[#101D3A]">{ride.pickup} → {ride.dropoff}</p>
+                      <p className="mt-1 font-semibold text-[#1683F8]">{new Date(ride.time).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</p>
                     </div>
                   )}
+
                   <div className="flex gap-2">
-                    <button onClick={() => handleUpdateRequest(req.id, 'accepted')} className="flex-1 rounded-xl bg-teal-700 py-3 text-sm font-bold text-white hover:bg-teal-800">Confirm</button>
-                    <button onClick={() => handleUpdateRequest(req.id, 'rejected')} className="flex-1 rounded-xl border border-slate-200 bg-white py-3 text-sm font-bold text-slate-700 hover:bg-slate-50">Reject</button>
+                    <button
+                      onClick={() => handleUpdateRequest(req.id, 'accepted')}
+                      className="flex-1 rounded-xl bg-[#1683F8] py-2.5 text-xs font-bold text-white hover:bg-[#168BFF] transition-colors shadow-sm"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => handleUpdateRequest(req.id, 'rejected')}
+                      className="flex-1 rounded-xl border border-[#E5484D]/30 bg-[#E5484D]/10 py-2.5 text-xs font-bold text-[#E5484D] hover:bg-[#E5484D]/20 transition-colors"
+                    >
+                      Reject
+                    </button>
                   </div>
                 </div>
               );
             })}
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
-      <section>
-        <div className="mb-4 border-b border-slate-200 pb-4">
-          <h2 className="text-2xl font-extrabold text-slate-950">My offered rides</h2>
-          <p className="mt-1 text-sm font-medium text-slate-500">Rides you are currently driving.</p>
+      {/* CLEAN TAB STRUCTURE: OFFERED | REQUESTED | LOOKING (Requirement 9) */}
+      <section className="space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#DCE5F0] pb-4">
+          <div>
+            <h2 className="text-2xl font-black text-[#101D3A]">My Rides</h2>
+            <p className="mt-1 text-xs text-[#65728A]">Manage your created, joined, and requested trips.</p>
+          </div>
+
+          {/* TAB PILLS */}
+          <div className="flex items-center gap-1.5 rounded-2xl bg-[#EEF7FF] p-1.5 border border-[#DCE5F0]">
+            {['OFFERED', 'REQUESTED', 'LOOKING'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`rounded-xl px-4 py-2 text-xs font-extrabold transition-all ${
+                  activeTab === tab
+                    ? 'bg-[#1683F8] text-white shadow-sm'
+                    : 'text-[#101D3A] hover:bg-white/60'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
-        {activeCreated.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm font-semibold text-slate-500">You have not offered any rides yet.</div>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {activeCreated.map(ride => <RideCard key={ride.id} ride={ride} currentUserId={user.uid} onCancel={handleCancelRide} onFinish={handleFinishRide} />)}
+
+        {/* TAB CONTENTS */}
+        {activeTab === 'OFFERED' && (
+          <div>
+            {activeCreated.length === 0 ? (
+              <div className="rounded-3xl border border-dashed border-[#DCE5F0] bg-white p-12 text-center shadow-sm">
+                <h3 className="text-lg font-bold text-[#101D3A]">No rides offered yet</h3>
+                <p className="mt-1 text-xs text-[#65728A]">Publish your route to help fellow campus students commute.</p>
+                <Link to="/create" className="btn-primary mt-5">Offer a Ride</Link>
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {activeCreated.map(ride => (
+                  <RideCard key={ride.id} ride={ride} currentUserId={user.uid} onCancel={handleCancelRide} onFinish={handleFinishRide} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'REQUESTED' && (
+          <div>
+            {activeJoined.length === 0 ? (
+              <div className="rounded-3xl border border-dashed border-[#DCE5F0] bg-white p-12 text-center shadow-sm">
+                <h3 className="text-lg font-bold text-[#101D3A]">No joined rides</h3>
+                <p className="mt-1 text-xs text-[#65728A]">Browse open listings to request a seat.</p>
+                <Link to="/" className="btn-primary mt-5">Find Rides</Link>
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {activeJoined.map(ride => (
+                  <RideCard key={ride.id} ride={ride} currentUserId={user.uid} onFinish={handleFinishRide} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'LOOKING' && (
+          <div>
+            <div className="rounded-3xl border border-[#DCE5F0] bg-white p-8 text-center shadow-sm">
+              <h3 className="text-lg font-bold text-[#101D3A]">Searching for Seats</h3>
+              <p className="mt-1 text-xs text-[#65728A]">Check available live rides travelling between PCU and city hubs.</p>
+              <Link to="/" className="btn-primary mt-5">Explore All Rides →</Link>
+            </div>
           </div>
         )}
       </section>
 
-      <section>
-        <div className="mb-4 border-b border-slate-200 pb-4">
-          <h2 className="text-2xl font-extrabold text-slate-950">My joined rides</h2>
-          <p className="mt-1 text-sm font-medium text-slate-500">Upcoming trips you have booked.</p>
-        </div>
-        {activeJoined.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm font-semibold text-slate-500">You have not joined any rides yet.</div>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {activeJoined.map(ride => <RideCard key={ride.id} ride={ride} currentUserId={user.uid} onFinish={handleFinishRide} />)}
-          </div>
-        )}
-      </section>
     </main>
   );
 }

@@ -88,19 +88,19 @@ function Resources() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans pb-20">
+    <div className="min-h-screen bg-[#F7FAFE] text-[#101D3A] font-sans pb-20">
       
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden pt-12 pb-16 sm:pt-20 sm:pb-24 px-4 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white">
+      <section className="relative overflow-hidden pt-12 pb-16 sm:pt-20 sm:pb-24 px-4 border-b border-[#DCE5F0] bg-gradient-to-b from-[#EEF7FF]/80 via-white to-white">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950 text-white text-xs font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#101D3A] text-white text-xs font-bold uppercase tracking-wider">
             <img src="/logo.png" alt="Rydeon Logo" className="h-4 w-4 object-contain" />
             <span>Student Travel Knowledge Base</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-black text-slate-950 tracking-tight leading-[1.1]">
+          <h1 className="text-4xl sm:text-6xl font-black text-[#101D3A] tracking-tight leading-[1.1]">
             Useful things for getting<br />
-            <span className="text-teal-700"> around smarter.</span>
+            <span className="text-[#1683F8]"> around smarter.</span>
           </h1>
 
           <p className="text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-normal">
@@ -112,24 +112,24 @@ function Resources() {
       {/* RESOURCE CATEGORIES */}
       <section className="py-20 px-4 max-w-6xl mx-auto space-y-16">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block">GUIDES & ARTICLES</span>
-          <h2 className="text-3xl font-black text-slate-950">Everything you need to know</h2>
+          <span className="text-xs font-bold text-[#1683F8] uppercase tracking-widest block">GUIDES & ARTICLES</span>
+          <h2 className="text-3xl font-black text-[#101D3A]">Everything you need to know</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {categories.map((cat, idx) => (
-            <div key={idx} className="bg-slate-50 border border-slate-200/80 rounded-3xl p-6 space-y-6">
-              <div className="flex items-center gap-3 border-b border-slate-200/80 pb-4">
+            <div key={idx} className="bg-white border border-[#DCE5F0] rounded-3xl p-6 space-y-6 shadow-sm">
+              <div className="flex items-center gap-3 border-b border-[#EEF7FF] pb-4">
                 <span className="text-2xl">{cat.icon}</span>
-                <h3 className="font-extrabold text-slate-950 text-base">{cat.title}</h3>
+                <h3 className="font-extrabold text-[#101D3A] text-base">{cat.title}</h3>
               </div>
 
               <div className="space-y-4">
                 {cat.items.map((item, itemIdx) => (
-                  <div key={itemIdx} className="bg-white p-4.5 rounded-2xl border border-slate-200/70 shadow-sm space-y-1 hover:border-slate-300 transition">
-                    <h4 className="font-bold text-xs text-slate-950 flex items-center justify-between">
+                  <div key={itemIdx} className="bg-[#F7FAFE] p-4.5 rounded-2xl border border-[#DCE5F0] shadow-sm space-y-1 hover:border-[#1683F8]/30 transition">
+                    <h4 className="font-bold text-xs text-[#101D3A] flex items-center justify-between">
                       <span>{item.name}</span>
-                      <ArrowRightIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <ArrowRightIcon className="w-3.5 h-3.5 text-[#1683F8] shrink-0" />
                     </h4>
                     <p className="text-[11px] text-slate-500 leading-relaxed">{item.desc}</p>
                   </div>
@@ -141,11 +141,11 @@ function Resources() {
       </section>
 
       {/* EXPANDABLE FAQ ACCORDION SECTION */}
-      <section className="py-16 px-4 bg-slate-50 border-t border-b border-slate-200/80">
+      <section className="py-16 px-4 bg-white border-t border-b border-[#DCE5F0]">
         <div className="max-w-3xl mx-auto space-y-10">
           <div className="text-center space-y-2">
-            <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block">FREQUENTLY ASKED QUESTIONS</span>
-            <h2 className="text-3xl font-black text-slate-950">Got questions? We've got answers.</h2>
+            <span className="text-xs font-bold text-[#1683F8] uppercase tracking-widest block">FREQUENTLY ASKED QUESTIONS</span>
+            <h2 className="text-3xl font-black text-[#101D3A]">Got questions? We've got answers.</h2>
           </div>
 
           {/* ACCORDION ITEMS */}
@@ -155,18 +155,18 @@ function Resources() {
               return (
                 <div
                   key={faq.id}
-                  className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-sm transition"
+                  className="bg-[#F7FAFE] border border-[#DCE5F0] rounded-2xl overflow-hidden shadow-sm transition"
                 >
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : faq.id)}
-                    className="w-full px-6 py-4 text-left font-bold text-slate-950 text-xs sm:text-sm flex items-center justify-between gap-4 hover:bg-slate-50 transition"
+                    className="w-full px-6 py-4 text-left font-bold text-[#101D3A] text-xs sm:text-sm flex items-center justify-between gap-4 hover:bg-[#EEF7FF] transition"
                   >
                     <span>{faq.question}</span>
-                    <ChevronDownIcon className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-teal-700' : ''}`} />
+                    <ChevronDownIcon className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#1683F8]' : ''}`} />
                   </button>
 
                   {isOpen && (
-                    <div className="px-6 pb-5 pt-1 text-xs text-slate-600 border-t border-slate-100 leading-relaxed bg-slate-50/50">
+                    <div className="px-6 pb-5 pt-1 text-xs text-slate-600 border-t border-[#DCE5F0] leading-relaxed bg-white">
                       {faq.answer}
                     </div>
                   )}
@@ -181,18 +181,18 @@ function Resources() {
       <section className="mt-16 text-center max-w-xl mx-auto px-4 space-y-4">
         <div className="flex items-center justify-center gap-2">
           <img src="/logo.png" alt="Rydeon Logo" className="h-6 w-6 object-contain" />
-          <h3 className="font-extrabold text-slate-950 text-base">Still have questions?</h3>
+          <h3 className="font-extrabold text-[#101D3A] text-base">Still have questions?</h3>
         </div>
         <p className="text-xs text-slate-500">
-          Contact our campus support team anytime at <a href="mailto:teamrydeon@gmail.com" className="font-bold text-teal-700 underline">teamrydeon@gmail.com</a>.
+          Contact our campus support team anytime at <a href="mailto:teamrydeon@gmail.com" className="font-bold text-[#1683F8] underline">teamrydeon@gmail.com</a>.
         </p>
         <div className="pt-2">
           <Link
             to="/signup"
-            className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-7 py-3.5 text-xs font-bold text-white shadow"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#1683F8] hover:bg-[#168BFF] px-7 py-3.5 text-xs font-bold text-white shadow-lg shadow-[#1683F8]/30 transition"
           >
             <span>Get Started with Rydeon</span>
-            <ArrowRightIcon className="w-4 h-4 text-teal-400" />
+            <ArrowRightIcon className="w-4 h-4 text-white" />
           </Link>
         </div>
       </section>

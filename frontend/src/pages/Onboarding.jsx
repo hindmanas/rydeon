@@ -100,62 +100,62 @@ function Onboarding({ user, setOnboarded }) {
     }
   };
 
-  if (checking) return <div className="text-center py-20 text-brand-400">Loading your profile...</div>;
+  if (checking) return <div className="text-center py-20 text-[#1683F8]">Loading your profile...</div>;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] py-8 px-4 md:px-8">
-      <div className="card w-full max-w-md relative overflow-hidden">
-        {/* Neon accent top border */}
-        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-400 via-emerald-500 to-teal-500"></div>
+      <div className="card w-full max-w-md relative overflow-hidden bg-white border border-[#DCE5F0] shadow-xl p-8">
+        {/* Rydeon accent top border */}
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-[#1683F8]"></div>
         
-        <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-2 mt-2 text-center tracking-tight">Complete Profile</h1>
-        <p className="text-slate-400 mb-8 text-sm text-center">Just a few more details to get you riding.</p>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-[#101D3A] mb-2 mt-2 text-center tracking-tight">Complete Profile</h1>
+        <p className="text-slate-500 mb-8 text-sm text-center">Just a few more details to get you riding.</p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">College Email</label>
+            <label className="block text-sm font-medium text-[#101D3A] mb-1.5">College Email</label>
             <input 
               type="text" 
               value={user?.email || ''} 
               disabled 
-              className="input-field py-2.5 md:py-3 bg-white/5 opacity-70 cursor-not-allowed" 
+              className="w-full bg-[#F7FAFE] border border-[#DCE5F0] rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-500 opacity-80 cursor-not-allowed" 
             />
-            <p className="text-xs text-brand-500/80 mt-1.5 font-medium ml-1">Synced with Google. Cannot be changed.</p>
+            <p className="text-xs text-[#1683F8] mt-1.5 font-medium ml-1">Synced with Google. Cannot be changed.</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">Full Name</label>
+            <label className="block text-sm font-medium text-[#101D3A] mb-1.5">Full Name</label>
             <input 
               type="text" 
               name="fullName"
               value={formData.fullName} 
               onChange={handleChange}
               placeholder="e.g. Alex Johnson"
-              className="input-field py-2.5 md:py-3" 
+              className="w-full bg-[#F7FAFE] border border-[#DCE5F0] rounded-xl px-3.5 py-2.5 text-xs font-medium text-[#101D3A] focus:bg-white focus:outline-none focus:border-[#1683F8] transition" 
               required
             />
           </div>
 
           <div>
-             <label className="block text-sm font-medium text-slate-300 mb-1.5">Mobile Number</label>
+             <label className="block text-sm font-medium text-[#101D3A] mb-1.5">Mobile Number</label>
              <input 
                type="tel" 
                name="mobile"
                value={formData.mobile} 
                onChange={handleChange}
                placeholder="+91 9876543210"
-               className="input-field py-2.5 md:py-3" 
+               className="w-full bg-[#F7FAFE] border border-[#DCE5F0] rounded-xl px-3.5 py-2.5 text-xs font-medium text-[#101D3A] focus:bg-white focus:outline-none focus:border-[#1683F8] transition" 
                required
              />
           </div>
 
           <div>
-             <label className="block text-sm font-medium text-slate-300 mb-1.5">Gender <span className="text-xs text-slate-500 font-normal ml-1">(Cannot be changed later)</span></label>
+             <label className="block text-sm font-medium text-[#101D3A] mb-1.5">Gender <span className="text-xs text-slate-500 font-normal ml-1">(Cannot be changed later)</span></label>
              <select 
                name="gender"
                value={formData.gender} 
                onChange={handleChange}
-               className="input-field py-2.5 md:py-3"
+               className="w-full bg-[#F7FAFE] border border-[#DCE5F0] rounded-xl px-3.5 py-2.5 text-xs font-medium text-[#101D3A] focus:bg-white focus:outline-none focus:border-[#1683F8] transition"
                required
              >
                <option value="male">Male</option>
@@ -164,13 +164,13 @@ function Onboarding({ user, setOnboarded }) {
              </select>
           </div>
 
-          <div className="pt-2 border-t border-white/5">
-            <h3 className="text-sm font-semibold text-slate-300 mb-3">Optional: Set Password</h3>
-            <p className="text-xs text-slate-400 mb-4">Set a password to login with your email if you can't use Google Auth on another device.</p>
+          <div className="pt-2 border-t border-[#DCE5F0]">
+            <h3 className="text-sm font-semibold text-[#101D3A] mb-1">Optional: Set Password</h3>
+            <p className="text-xs text-slate-500 mb-4">Set a password to login with your email if you can't use Google Auth on another device.</p>
             
             <div className="space-y-4">
               <div className="relative">
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
+                <label className="block text-sm font-medium text-[#101D3A] mb-1.5">Password</label>
                 <div className="relative">
                   <input 
                     type={showPassword ? "text" : "password"} 
@@ -178,12 +178,12 @@ function Onboarding({ user, setOnboarded }) {
                     value={formData.password} 
                     onChange={handleChange}
                     placeholder="••••••••"
-                    className="input-field py-2.5 md:py-3 pl-4 pr-10" 
+                    className="w-full bg-[#F7FAFE] border border-[#DCE5F0] rounded-xl px-3.5 py-2.5 text-xs font-medium text-[#101D3A] focus:bg-white focus:outline-none focus:border-[#1683F8] transition pr-10" 
                   />
                   <button 
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-[#101D3A]"
                   >
                     {showPassword ? (
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -199,7 +199,7 @@ function Onboarding({ user, setOnboarded }) {
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full btn-primary mt-4"
+            className="w-full bg-[#1683F8] hover:bg-[#168BFF] text-white font-bold py-3.5 rounded-xl text-xs shadow-lg shadow-[#1683F8]/20 transition mt-4"
           >
             {loading ? 'Saving...' : 'Finish Onboarding'}
           </button>

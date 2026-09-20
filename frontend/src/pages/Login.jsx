@@ -133,37 +133,37 @@ function Login() {
           <img src="/logo.png" alt="Rydeon Logo" className="h-12 w-12 object-contain" />
         </div>
 
-        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-950 mb-2 tracking-tight">Welcome Back</h1>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-[#101D3A] mb-2 tracking-tight">Welcome Back</h1>
         <p className="text-slate-500 mb-6 text-xs">Sign in to Rydeon using your university credentials.</p>
 
         <form onSubmit={handleEmailLogin} className="space-y-4 mb-6">
           <div className="text-left">
-            <label className="block text-xs font-bold text-slate-700 mb-1 ml-1">University Email</label>
+            <label className="block text-xs font-bold text-[#101D3A] mb-1 ml-1">University Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="id@pcu.edu.in"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium focus:bg-white focus:outline-none focus:border-slate-950 transition"
+              className="w-full bg-[#F7FAFE] border border-[#DCE5F0] rounded-xl px-3.5 py-2.5 text-xs font-medium focus:bg-white focus:outline-none focus:border-[#1683F8] transition"
               required
             />
           </div>
 
           <div className="text-left relative">
-            <label className="block text-xs font-bold text-slate-700 mb-1 ml-1">Password</label>
+            <label className="block text-xs font-bold text-[#101D3A] mb-1 ml-1">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium focus:bg-white focus:outline-none focus:border-slate-950 transition pr-10"
+                className="w-full bg-[#F7FAFE] border border-[#DCE5F0] rounded-xl px-3.5 py-2.5 text-xs font-medium focus:bg-white focus:outline-none focus:border-[#1683F8] transition pr-10"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-950"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-[#101D3A]"
               >
                 {showPassword ? (
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -177,30 +177,30 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-slate-950 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-xs shadow transition mt-2"
+            className="w-full bg-[#1683F8] hover:bg-[#168BFF] text-white font-bold py-3 rounded-xl text-xs shadow-lg shadow-[#1683F8]/20 transition mt-2"
           >
             {loading ? 'Logging in...' : 'Log In'}
           </button>
         </form>
 
         <div className="relative flex items-center py-2 mb-4">
-          <div className="flex-grow border-t border-slate-200"></div>
+          <div className="flex-grow border-t border-[#DCE5F0]"></div>
           <span className="flex-shrink-0 mx-4 text-slate-400 text-xs font-semibold">or continue with</span>
-          <div className="flex-grow border-t border-slate-200"></div>
+          <div className="flex-grow border-t border-[#DCE5F0]"></div>
         </div>
 
         <button
           onClick={handleGoogleAuth}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-white border border-slate-200 text-slate-800 font-bold rounded-xl hover:bg-slate-50 transition text-xs shadow-sm"
+          className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-white border border-[#DCE5F0] text-[#101D3A] font-bold rounded-xl hover:bg-[#F7FAFE] transition text-xs shadow-sm"
         >
           <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-[18px] h-[18px]" alt="Google logo" />
           {loading ? 'Authenticating...' : 'Sign in with Google'}
         </button>
 
-        <div className="mt-6 pt-4 border-t border-slate-100">
+        <div className="mt-6 pt-4 border-t border-[#EEF7FF]">
           <p className="text-xs text-slate-500 font-semibold flex items-center justify-center gap-1">
-            New here? <Link to="/signup" className="text-teal-700 font-bold hover:underline">Create Account</Link>
+            New here? <Link to="/signup" className="text-[#1683F8] font-bold hover:underline">Create Account</Link>
           </p>
         </div>
       </div>

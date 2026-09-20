@@ -39,24 +39,21 @@ export default function ChatPage({ user }) {
       try {
         client = StreamChat.getInstance(apiKey);
 
-        // Fetch token securely from our backend
         const res = await fetch(`https://rydeon-backend-xdbl.onrender.com/api/chat/token/${user.uid}`);
         if (!res.ok) {
           throw new Error('Failed to fetch chat token');
         }
         const data = await res.json();
 
-        // Connect user
         await client.connectUser(
           {
             id: user.uid,
             name: user.displayName || user.email?.split('@')[0] || 'User',
-            image: `https://ui-avatars.com/api/?name=${user.displayName || 'User'}`
+            image: `https://ui-avatars.com/api/?name=${user.displayName || 'User'}&background=1683F8&color=fff`
           },
           data.token
         );
 
-        // Define channel members if available to allow auto-creation by stream backend
         const streamOptions = {
           name: otherUser ? `Chat with ${otherUser.name}` : `Ride Chat`,
         };
@@ -81,7 +78,6 @@ export default function ChatPage({ user }) {
 
     return () => {
       if (client) {
-        // Disconnect to gracefully handle memory and connections
         client.disconnectUser();
       }
     };
@@ -89,14 +85,14 @@ export default function ChatPage({ user }) {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center text-white min-h-[60vh] fade-in">
-        <div className="w-16 h-16 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-6">
+      <div className="flex flex-col items-center justify-center p-12 text-center text-[#101D3A] min-h-[60vh] fade-in">
+        <div className="w-16 h-16 rounded-full bg-[#E5484D]/10 text-[#E5484D] flex items-center justify-center mx-auto mb-6">
           <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
         <h2 className="text-2xl font-bold mb-2">Notice</h2>
-        <p className="text-slate-400 mb-6">{error}</p>
+        <p className="text-[#65728A] mb-6">{error}</p>
         <button onClick={() => navigate(-1)} className="btn-primary">Go Back</button>
       </div>
     );
@@ -105,8 +101,8 @@ export default function ChatPage({ user }) {
   if (!chatClient || !channel) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] fade-in">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500 mb-4 shadow-[0_0_15px_rgba(20,184,166,0.3)]"></div>
-        <p className="text-slate-400">Connecting to secure chat...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1683F8] mb-4"></div>
+        <p className="text-[#65728A] font-semibold text-xs">Connecting to secure Ride Chat...</p>
       </div>
     );
   }
@@ -116,36 +112,33 @@ export default function ChatPage({ user }) {
   const dropoff = channel?.data?.dropoff;
 
   return (
-    <div className="fade-in bg-slate-900 border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl h-[70vh] flex flex-col mt-6 relative">
-      <div className="p-4 border-b border-slate-700/50 flex items-center justify-between bg-slate-800/80 backdrop-blur-md relative z-[100]">
+    <div className="fade-in bg-white border border-[#DCE5F0] rounded-3xl overflow-hidden shadow-sm h-[75vh] flex flex-col my-6 relative">
+      <div className="p-4 border-b border-[#DCE5F0] flex items-center justify-between bg-white backdrop-blur-md relative z-[100]">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="p-2.5 bg-slate-700/50 hover:bg-slate-700 rounded-full text-white transition-all hover:scale-105 active:scale-95 border border-slate-600">
+          <button onClick={() => navigate(-1)} className="p-2 bg-[#F7FAFE] hover:bg-[#EEF7FF] rounded-xl text-[#101D3A] transition-all border border-[#DCE5F0]">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
           <div>
-            <h2 className="text-xl font-bold text-white">
-              {otherUser ? `Chat with ${otherUser.name}` : 'Ride Chat'}
+            <h2 className="text-lg font-black text-[#101D3A]">
+              {otherUser ? `← Chat with ${otherUser.name}` : '← Ride Chat'}
             </h2>
-            <p className="text-xs text-brand-400 font-medium">Secured by Stream Chat</p>
+            <p className="text-xs text-[#1683F8] font-bold">Secured Student Chat</p>
           </div>
         </div>
         {pickup && dropoff && (
           <button
             onClick={() => setShowMap(true)}
-            className="bg-brand-500 hover:bg-brand-400 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition font-medium"
+            className="btn-primary py-2 px-3 text-xs"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
             Get Directions
           </button>
         )}
       </div>
 
-      <div className="flex-1 overflow-hidden relative z-[1] chat-container-override">
-        <Chat client={chatClient} theme="str-chat__theme-dark">
+      <div className="flex-1 overflow-hidden relative z-[1] chat-container-override bg-[#F7FAFE]">
+        <Chat client={chatClient} theme="str-chat__theme-light">
           <Channel channel={channel}>
             <Window>
               <MessageList />
@@ -160,21 +153,37 @@ export default function ChatPage({ user }) {
 
       <style dangerouslySetInnerHTML={{
         __html: `
-           /* Minimal CSS overrides to blend Stream's dark theme perfectly with Rydeon's slate tones */
-           .str-chat__theme-dark {
+           /* CSS overrides for Rydeon Blue & White theme */
+           .str-chat__theme-light {
                --str-chat__background-color: transparent !important;
-               --str-chat__surface-color: #1e293b !important;
-               --str-chat__primary-color: #14b8a6 !important;
-               --str-chat__secondary-color: #4f46e5 !important;
+               --str-chat__surface-color: #ffffff !important;
+               --str-chat__primary-color: #1683F8 !important;
+               --str-chat__secondary-color: #101D3A !important;
+               --str-chat__text-color: #101D3A !important;
+               --str-chat__text-low-emphasis-color: #65728A !important;
+               --str-chat__border-color: #DCE5F0 !important;
+               font-family: 'Inter', sans-serif !important;
+           }
+           .str-chat__message--me .str-chat__message-bubble {
+               background-color: #1683F8 !important;
+               color: #ffffff !important;
+               border-radius: 16px !important;
+           }
+           .str-chat__message--other .str-chat__message-bubble {
+               background-color: #EEF7FF !important;
+               color: #101D3A !important;
+               border: 1px solid #DCE5F0 !important;
+               border-radius: 16px !important;
            }
            .str-chat__message-list {
-               background-color: transparent !important;
+               background-color: #F7FAFE !important;
            }
            .chat-container-override .str-chat {
                height: 100%;
-               background: transparent;
+               background: #F7FAFE;
            }
        `}} />
     </div>
   );
 }
+

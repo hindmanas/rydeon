@@ -26,7 +26,7 @@ import Profile from './pages/Profile';
 // Wrapper to enforce onboarding globally on authenticated routes
 const RequireOnboarding = ({ isOnboarded, children }) => {
   if (isOnboarded === null) {
-     return <div className="flex h-screen items-center justify-center text-teal-600 font-medium">Verifying profile...</div>;
+     return <div className="flex h-screen items-center justify-center text-[#1683F8] font-medium">Verifying profile...</div>;
   }
 
   if (!isOnboarded) {
@@ -35,6 +35,17 @@ const RequireOnboarding = ({ isOnboarded, children }) => {
 
   return children;
 };
+
+// Scroll reset component on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 // Helper component to conditionally render Header/Navbar except on onboarding
 function MainHeader({ user }) {
@@ -100,6 +111,7 @@ function App() {
 
   return (
     <>
+      <ScrollToTop />
       <Toaster position="top-right" toastOptions={{
         className: 'bg-white border border-slate-200 text-slate-950 font-medium shadow-xl',
         style: {

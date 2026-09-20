@@ -14,19 +14,19 @@ import campusStudentsWaiting from '../assets/campus_students_waiting.jpg';
 
 function Safety() {
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans pb-20">
+    <div className="min-h-screen bg-[#F7FAFE] text-[#101D3A] font-sans pb-20">
       
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden pt-12 pb-16 sm:pt-20 sm:pb-24 px-4 border-b border-slate-100 bg-gradient-to-b from-teal-50/40 via-white to-white">
+      <section className="relative overflow-hidden pt-12 pb-16 sm:pt-20 sm:pb-24 px-4 border-b border-[#DCE5F0] bg-gradient-to-b from-[#EEF7FF]/80 via-white to-white">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950 text-white text-xs font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#101D3A] text-white text-xs font-bold uppercase tracking-wider">
             <img src="/logo.png" alt="Rydeon Logo" className="h-4 w-4 object-contain" />
             <span>Safety & Trust Standards</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-black text-slate-950 tracking-tight leading-[1.1]">
+          <h1 className="text-4xl sm:text-6xl font-black text-[#101D3A] tracking-tight leading-[1.1]">
             Travel with people you can<br className="hidden sm:inline" />
-            <span className="text-teal-700"> actually verify.</span>
+            <span className="text-[#1683F8]"> actually verify.</span>
           </h1>
 
           <p className="text-base sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-normal">
@@ -41,26 +41,26 @@ function Safety() {
         {/* PILLAR 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-6 space-y-4">
-            <span className="text-xs font-extrabold text-teal-700 uppercase tracking-widest block">PILLAR 01</span>
-            <h2 className="text-2xl sm:text-4xl font-black text-slate-950">
+            <span className="text-xs font-extrabold text-[#1683F8] uppercase tracking-widest block">PILLAR 01</span>
+            <h2 className="text-2xl sm:text-4xl font-black text-[#101D3A]">
               Student-first verification
             </h2>
-            <p className="text-teal-700 font-extrabold text-sm">"Know who's on the other side."</p>
+            <p className="text-[#1683F8] font-extrabold text-sm">"Know who's on the other side."</p>
             <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
               We require student verification using valid campus credentials (.edu.in emails & digital student IDs) before anyone can post or request rides. No random strangers off the street — only peers from your academic ecosystem.
             </p>
           </div>
 
           <div className="lg:col-span-6">
-            <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-xl bg-slate-50">
+            <div className="relative rounded-3xl overflow-hidden border border-[#DCE5F0] shadow-xl bg-[#F7FAFE]">
               <img
                 src={campusStudentsWaiting}
                 alt="Verified students on campus"
                 className="w-full h-auto object-cover max-h-[380px]"
               />
-              <div className="absolute bottom-4 left-4 right-4 bg-slate-950/85 backdrop-blur text-white p-3.5 rounded-2xl text-xs space-y-1">
-                <p className="font-bold text-teal-400">✓ Campus Domain & Student ID Verified</p>
-                <p className="text-[11px] text-slate-300">Access limited strictly to verified university commuters</p>
+              <div className="absolute bottom-4 left-4 right-4 bg-[#101D3A]/90 backdrop-blur text-white p-3.5 rounded-2xl text-xs space-y-1">
+                <p className="font-bold text-[#168BFF]">✓ Campus Domain & Student ID Verified</p>
+                <p className="text-[11px] text-blue-100">Access limited strictly to verified university commuters</p>
               </div>
             </div>
           </div>
@@ -69,25 +69,25 @@ function Safety() {
         {/* PILLAR 2 */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-6 order-2 lg:order-1">
-            <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-xl bg-slate-50">
+            <div className="relative rounded-3xl overflow-hidden border border-[#DCE5F0] shadow-xl bg-[#F7FAFE]">
               <img
                 src={studentDriver}
                 alt="Verified student driver reviewing request"
                 className="w-full h-auto object-cover max-h-[380px]"
               />
-              <div className="absolute bottom-4 left-4 right-4 bg-slate-950/85 backdrop-blur text-white p-3.5 rounded-2xl text-xs space-y-1">
-                <p className="font-bold text-teal-400">✓ Double-Sided Host Control</p>
-                <p className="text-[11px] text-slate-300">Host driver explicitly reviews & approves each passenger request</p>
+              <div className="absolute bottom-4 left-4 right-4 bg-[#101D3A]/90 backdrop-blur text-white p-3.5 rounded-2xl text-xs space-y-1">
+                <p className="font-bold text-[#168BFF]">✓ Double-Sided Host Control</p>
+                <p className="text-[11px] text-blue-100">Host driver explicitly reviews & approves each passenger request</p>
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-6 order-1 lg:order-2 space-y-4">
-            <span className="text-xs font-extrabold text-teal-700 uppercase tracking-widest block">PILLAR 02</span>
-            <h2 className="text-2xl sm:text-4xl font-black text-slate-950">
+            <span className="text-xs font-extrabold text-[#1683F8] uppercase tracking-widest block">PILLAR 02</span>
+            <h2 className="text-2xl sm:text-4xl font-black text-[#101D3A]">
               Request-based confirmation
             </h2>
-            <p className="text-teal-700 font-extrabold text-sm">"Your request. Your choice."</p>
+            <p className="text-[#1683F8] font-extrabold text-sm">"Your request. Your choice."</p>
             <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
               Unlike commercial taxi services with automated dispatch, Rydeon uses double-sided confirmation. Drivers always review who wants to join their car before accepting, ensuring complete control for hosts and riders alike.
             </p>
@@ -97,26 +97,26 @@ function Safety() {
         {/* PILLAR 3 */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-6 space-y-4">
-            <span className="text-xs font-extrabold text-teal-700 uppercase tracking-widest block">PILLAR 03</span>
-            <h2 className="text-2xl sm:text-4xl font-black text-slate-950">
+            <span className="text-xs font-extrabold text-[#1683F8] uppercase tracking-widest block">PILLAR 03</span>
+            <h2 className="text-2xl sm:text-4xl font-black text-[#101D3A]">
               Ride-specific communication
             </h2>
-            <p className="text-teal-700 font-extrabold text-sm">"Keep conversations where the ride lives."</p>
+            <p className="text-[#1683F8] font-extrabold text-sm">"Keep conversations where the ride lives."</p>
             <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
               Chat opens only after a request is accepted. It stays tied strictly to that specific trip, so you never have to post phone numbers in public WhatsApp groups or deal with unverified spam messages.
             </p>
           </div>
 
           <div className="lg:col-span-6">
-            <div className="bg-slate-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl space-y-4 border border-slate-800">
-              <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-                <MessageSquareIcon className="w-4 h-4 text-teal-400" />
+            <div className="bg-[#101D3A] text-white rounded-3xl p-6 sm:p-8 shadow-xl space-y-4 border border-blue-900/50">
+              <div className="flex items-center gap-2 border-b border-blue-900/60 pb-3">
+                <MessageSquareIcon className="w-4 h-4 text-[#168BFF]" />
                 <span className="font-bold text-xs text-white">Protected Sandbox Ride Chat</span>
               </div>
-              <div className="p-4 bg-slate-900 rounded-2xl text-xs space-y-2 border border-slate-800">
-                <p className="text-slate-300">🔒 Messages are protected inside Rydeon's encrypted sandbox.</p>
-                <p className="text-slate-300">📞 Zero phone number exchange required before confirmation.</p>
-                <p className="text-slate-300">🚨 Report button active inside every chat for instant safety escalations.</p>
+              <div className="p-4 bg-[#101D3A]/80 rounded-2xl text-xs space-y-2 border border-blue-900/60">
+                <p className="text-blue-100">🔒 Messages are protected inside Rydeon's encrypted sandbox.</p>
+                <p className="text-blue-100">📞 Zero phone number exchange required before confirmation.</p>
+                <p className="text-blue-100">🚨 Report button active inside every chat for instant safety escalations.</p>
               </div>
             </div>
           </div>
@@ -125,11 +125,11 @@ function Safety() {
       </section>
 
       {/* PRACTICAL SAFETY TIPS */}
-      <section className="py-16 px-4 bg-slate-50 border-t border-b border-slate-200/80">
+      <section className="py-16 px-4 bg-white border-t border-b border-[#DCE5F0]">
         <div className="max-w-5xl mx-auto space-y-12">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-xs font-bold text-teal-700 uppercase tracking-widest block">COMMUNITY GUIDELINES</span>
-            <h2 className="text-3xl font-extrabold text-slate-950">Practical advice for every travel day</h2>
+            <span className="text-xs font-bold text-[#1683F8] uppercase tracking-widest block">COMMUNITY GUIDELINES</span>
+            <h2 className="text-3xl font-extrabold text-[#101D3A]">Practical advice for every travel day</h2>
             <p className="text-slate-600 text-sm">
               We promote honest, common-sense practices for a comfortable ride.
             </p>
@@ -168,11 +168,11 @@ function Safety() {
                 desc: "Prices represent shared fuel costs, not commercial profits. Clear expectations prevent misunderstandings."
               }
             ].map((tip, idx) => (
-              <div key={idx} className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-sm hover:shadow transition">
-                <span className="text-xs font-black text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg block w-fit mb-3">
+              <div key={idx} className="bg-[#F7FAFE] border border-[#DCE5F0] p-6 rounded-2xl shadow-sm hover:shadow transition">
+                <span className="text-xs font-black text-[#1683F8] bg-[#EEF7FF] px-2.5 py-1 rounded-lg block w-fit mb-3 border border-[#DCE5F0]">
                   Tip {tip.number}
                 </span>
-                <h3 className="font-extrabold text-slate-950 text-base mb-2">{tip.title}</h3>
+                <h3 className="font-extrabold text-[#101D3A] text-base mb-2">{tip.title}</h3>
                 <p className="text-slate-600 text-xs leading-relaxed">{tip.desc}</p>
               </div>
             ))}
@@ -184,17 +184,17 @@ function Safety() {
       <section className="mt-16 text-center max-w-4xl mx-auto px-4">
         <div className="flex items-center justify-center gap-2 mb-4">
           <img src="/logo.png" alt="Rydeon Logo" className="h-6 w-6 object-contain" />
-          <span className="text-lg font-black text-slate-950">Rydeon Safety Guardrails</span>
+          <span className="text-lg font-black text-[#101D3A]">Rydeon Safety Guardrails</span>
         </div>
         <p className="text-xs text-slate-500 max-w-xl mx-auto leading-relaxed mb-6">
           Rydeon is a peer-to-peer student matching platform. We encourage respectful, common-sense precautions on every ride.
         </p>
         <Link
           to="/signup"
-          className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-7 py-3.5 text-sm font-extrabold text-white shadow transition-all hover:bg-slate-800"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#1683F8] hover:bg-[#168BFF] px-7 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-[#1683F8]/30 transition-all"
         >
           <span>Explore Verified Rides</span>
-          <ArrowRightIcon className="w-4 h-4 text-teal-400" />
+          <ArrowRightIcon className="w-4 h-4 text-white" />
         </Link>
       </section>
 

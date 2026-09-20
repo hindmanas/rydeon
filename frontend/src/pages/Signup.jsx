@@ -53,23 +53,23 @@ function Signup() {
           <img src="/logo.png" alt="Rydeon Logo" className="h-12 w-12 object-contain" />
         </div>
 
-        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-950 mb-2 tracking-tight">Join Rydeon</h1>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-[#101D3A] mb-2 tracking-tight">Join Rydeon</h1>
         <p className="text-slate-500 mb-6 text-xs">Sign up securely using your university credentials.</p>
 
         <button
           onClick={handleGoogleAuth}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-3 px-6 py-3.5 bg-slate-950 text-white font-bold rounded-xl hover:bg-slate-800 transition text-xs shadow-md"
+          className="w-full flex items-center justify-center gap-3 px-6 py-3.5 bg-[#1683F8] hover:bg-[#168BFF] text-white font-bold rounded-xl transition text-xs shadow-lg shadow-[#1683F8]/20"
         >
           <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-[18px] h-[18px]" alt="Google logo" />
           {loading ? 'Authenticating...' : 'Sign up with Google'}
         </button>
 
-        <p className="text-[11px] text-teal-700 mt-4 mb-1 font-bold">Only @pcu.edu.in emails are permitted.</p>
+        <p className="text-[11px] text-[#1683F8] mt-4 mb-1 font-bold">Only @pcu.edu.in emails are permitted.</p>
 
-        <div className="mt-8 pt-6 border-t border-slate-100">
+        <div className="mt-8 pt-6 border-t border-[#EEF7FF]">
           <p className="text-xs text-slate-500 font-semibold flex items-center justify-center gap-1">
-            Already a member? <Link to="/login" className="text-teal-700 font-bold hover:underline">Log In</Link>
+            Already a member? <Link to="/login" className="text-[#1683F8] font-bold hover:underline">Log In</Link>
           </p>
         </div>
       </div>

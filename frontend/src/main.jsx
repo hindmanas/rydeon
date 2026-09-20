@@ -21,19 +21,19 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-6 font-sans">
-          <div className="max-w-md w-full bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-2xl text-center space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 mx-auto flex items-center justify-center font-bold text-xl">⚠️</div>
-            <h2 className="text-xl font-bold">Something went wrong</h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
+        <div className="min-h-screen flex items-center justify-center bg-[#F7FAFE] text-[#101D3A] p-6 font-sans">
+          <div className="max-w-md w-full bg-white border border-[#DCE5F0] rounded-2xl p-6 shadow-2xl text-center space-y-4">
+            <div className="w-12 h-12 rounded-xl bg-rose-50 text-rose-500 mx-auto flex items-center justify-center font-bold text-xl">⚠️</div>
+            <h2 className="text-xl font-bold text-[#101D3A]">Something went wrong</h2>
+            <p className="text-sm text-slate-500 leading-relaxed">
               An unexpected error occurred while rendering Rydeon.
             </p>
-            <div className="bg-slate-950 p-3 rounded-xl text-left text-xs font-mono text-rose-300 overflow-x-auto max-h-32 border border-slate-800">
+            <div className="bg-[#F7FAFE] p-3 rounded-xl text-left text-xs font-mono text-rose-600 overflow-x-auto max-h-32 border border-[#DCE5F0]">
               {this.state.error?.toString()}
             </div>
             <button
               onClick={() => window.location.reload()}
-              className="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 rounded-xl transition text-sm"
+              className="w-full bg-[#1683F8] hover:bg-[#168BFF] text-white font-bold py-2.5 rounded-xl transition text-sm shadow-lg shadow-[#1683F8]/20"
             >
               Reload Page
             </button>
