@@ -8,15 +8,17 @@ exports.createRide = async (req, res) => {
 
         const newRide = {
             driverId,
-            driverName,
+            driverName: driverName || 'Driver',
             pickup,
             dropoff,
             time,
-            seats: parseInt(seats),
-            price: parseFloat(price),
+            seats: parseInt(seats) || 1,
+            price: parseFloat(price) || 0,
             allowedGender: allowedGender || 'all',
+            status: 'open',
             riders: [],
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
+            riderIds: [],
+            createdAt: new Date().toISOString()
         };
 
         const docRef = await db.collection('rides').add(newRide);
@@ -37,10 +39,22 @@ exports.getAllRides = async (req, res) => {
             userGenderPromise = db.collection('users').doc(uid).get().then(doc => doc.exists ? doc.data().gender : null);
         }
 
-        const ridesPromise = db.collection('rides').orderBy('createdAt', 'desc').limit(100).get();
+        let snapshot;
+        try {
+            snapshot = await db.collection('rides').orderBy('createdAt', 'desc').limit(100).get();
+        } catch (err) {
+            console.warn("orderBy query failed, fetching without server sort:", err);
+            snapshot = await db.collection('rides').limit(100).get();
+        }
 
-        const [userGender, snapshot] = await Promise.all([userGenderPromise, ridesPromise]);
-        let rides = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const [userGender, snap] = await Promise.all([userGenderPromise, snapshot]);
+        let rides = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        rides.sort((a, b) => {
+            const t1 = a.createdAt?.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt || 0).getTime();
+            const t2 = b.createdAt?.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt || 0).getTime();
+            return t2 - t1;
+        });
 
         // Filter rides
         if (userGender) {

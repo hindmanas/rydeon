@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { db } from '../services/firebase';
+import { collection, addDoc } from 'firebase/firestore';
+import toast from 'react-hot-toast';
 
-const rawBase = import.meta.env.VITE_API_BASE;
-const API_BASE = typeof rawBase === 'string' ? rawBase.trim().replace(/^['"]|['"]$/g, '') : 'https://rydeon-backend-xdbl.onrender.com/api/rides';
+const rawBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+const cleanBase = typeof rawBase === 'string' ? rawBase.trim().replace(/^['"]|['"]$/g, '').replace(/\/+$/, '') : rawBase;
+const RIDE_API_URL = cleanBase.endsWith('/rides') ? `${cleanBase}/create-ride` : `${cleanBase}/rides/create-ride`;
 
 function CreateRide({ user }) {
   const navigate = useNavigate();
@@ -20,24 +24,65 @@ function CreateRide({ user }) {
     e.preventDefault();
     setLoading(true);
 
+    const ridePayload = {
+      pickup: formData.pickup,
+      dropoff: formData.dropoff,
+      time: formData.time,
+      seats: Number(formData.seats),
+      price: Number(formData.price),
+      allowedGender: formData.allowedGender || 'all',
+      driverId: user.uid,
+      driverName: user.displayName || user.email?.split('@')[0] || 'Driver',
+      status: 'open',
+      riders: [],
+      createdAt: new Date().toISOString()
+    };
+
+    let created = false;
+
     try {
-      const response = await fetch(`${API_BASE}/create-ride`, {
+      const response = await fetch(RIDE_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, driverId: user.uid, driverName: user.displayName || user.email })
+        body: JSON.stringify(ridePayload)
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to create ride');
+      if (response.ok) {
+        created = true;
+      } else {
+        let errText = 'Failed to create ride';
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            errText = data.error || errText;
+          }
+        } catch (jsonErr) {
+          console.warn('Could not parse backend error JSON:', jsonErr);
+        }
+        console.warn(`Backend POST ${RIDE_API_URL} returned ${response.status}: ${errText}. Using Firestore client fallback.`);
       }
-
-      navigate('/');
-    } catch (error) {
-      alert('Error: ' + error.message);
-    } finally {
-      setLoading(false);
+    } catch (apiErr) {
+      console.warn('Backend API fetch error:', apiErr);
     }
+
+    if (!created) {
+      try {
+        await addDoc(collection(db, 'rides'), ridePayload);
+        created = true;
+      } catch (firestoreError) {
+        console.error('Firestore creation error:', firestoreError);
+        toast.error('Failed to create ride: ' + firestoreError.message);
+        setLoading(false);
+        return;
+      }
+    }
+
+    if (created) {
+      toast.success('Ride published successfully!');
+      navigate('/');
+    }
+    setLoading(false);
   };
 
   return (

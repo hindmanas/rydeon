@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import RideCard from '../components/RideCard';
 import { db } from '../services/firebase';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, updateDoc, deleteDoc, arrayUnion } from 'firebase/firestore';
 
-const rawBase = import.meta.env.VITE_API_BASE;
-const API_BASE = typeof rawBase === 'string' ? rawBase.trim().replace(/^['"]|['"]$/g, '') : rawBase;
+const rawBase = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+const API_BASE = typeof rawBase === 'string' ? rawBase.trim().replace(/^['"]|['"]$/g, '').replace(/\/+$/, '') : rawBase;
 
 function Dashboard({ user }) {
   const [createdRides, setCreatedRides] = useState([]);
@@ -79,23 +79,42 @@ function Dashboard({ user }) {
   }, [user.uid]);
 
   const handleUpdateRequest = async (requestId, status) => {
+    let updated = false;
     try {
       const response = await fetch(`${API_BASE}/requests/${requestId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status, driverId: user.uid })
       });
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || 'Failed to update request');
+      if (response.ok) {
+        updated = true;
+      } else {
+        let errText = 'Failed to update request';
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const errData = await response.json();
+            errText = errData.error || errText;
+          }
+        } catch (e) {}
+        console.warn(`Backend API PUT request status failed: ${errText}. Using Firestore fallback.`);
       }
     } catch (error) {
-      alert(error.message);
+      console.warn('Backend API request error:', error);
+    }
+
+    if (!updated) {
+      try {
+        await updateDoc(doc(db, 'ride_requests', requestId), { status });
+      } catch (fsErr) {
+        alert('Failed to update request: ' + fsErr.message);
+      }
     }
   };
 
   const handleCancelRide = async (rideId) => {
     if (!window.confirm('Are you sure you want to cancel this ride?')) return;
+    let cancelled = false;
 
     try {
       const response = await fetch(`${API_BASE}/rides/${rideId}`, {
@@ -103,22 +122,51 @@ function Dashboard({ user }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.uid })
       });
-      if (!response.ok) throw new Error('Failed to cancel ride');
+      if (response.ok) {
+        cancelled = true;
+      } else {
+        console.warn(`Backend API DELETE /rides/${rideId} failed. Using Firestore fallback.`);
+      }
     } catch (error) {
-      alert(error.message);
+      console.warn('Backend API delete error:', error);
+    }
+
+    if (!cancelled) {
+      try {
+        await deleteDoc(doc(db, 'rides', rideId));
+      } catch (fsErr) {
+        alert('Failed to cancel ride: ' + fsErr.message);
+      }
     }
   };
 
   const handleFinishRide = async (ride, options) => {
+    let finished = false;
+
     try {
       const response = await fetch(`${API_BASE}/rides/finish-ride`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rideId: ride.id, userId: user.uid, satisfied: options.satisfied })
       });
-      if (!response.ok) throw new Error('Failed to finish ride');
+      if (response.ok) {
+        finished = true;
+      } else {
+        console.warn(`Backend API finish-ride failed. Using Firestore fallback.`);
+      }
     } catch (error) {
-      alert(error.message);
+      console.warn('Backend API finish-ride error:', error);
+    }
+
+    if (!finished) {
+      try {
+        await updateDoc(doc(db, 'rides', ride.id), {
+          completedBy: arrayUnion(user.uid),
+          feedback: arrayUnion({ userId: user.uid, satisfied: options.satisfied })
+        });
+      } catch (fsErr) {
+        alert('Failed to finish ride: ' + fsErr.message);
+      }
     }
   };
 

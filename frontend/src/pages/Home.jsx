@@ -18,10 +18,10 @@ function Home({ user }) {
 
   // Search filter state
   const [activeMode, setActiveMode] = useState('find'); // 'find' | 'offer'
-  const [fromLocation, setFromLocation] = useState('Pimpri Chinchwad University');
-  const [toLocation, setToLocation] = useState('Pune International Airport');
-  const [searchDate, setSearchDate] = useState('Thu, 24 Apr • 10:30 AM');
-  const [selectedQuickTag, setSelectedQuickTag] = useState('COLLEGE');
+  const [fromLocation, setFromLocation] = useState('');
+  const [toLocation, setToLocation] = useState('');
+  const [searchDate, setSearchDate] = useState('');
+  const [selectedQuickTag, setSelectedQuickTag] = useState('');
 
   const [offerForm, setOfferForm] = useState({
     from: '',
@@ -87,31 +87,67 @@ function Home({ user }) {
   }, [user]);
 
   const handleRequestRide = async (ride) => {
+    const requestPayload = {
+      rideId: ride.id,
+      requesterId: user.uid,
+      requesterName: user.displayName || user.email.split('@')[0],
+      driverId: ride.driverId,
+      driverName: ride.driverName,
+      pickup: ride.pickup,
+      dropoff: ride.dropoff,
+      time: ride.time,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    };
+
+    let sent = false;
+
     try {
       const response = await fetch(`${API_BASE}/requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          rideId: ride.id,
-          requesterId: user.uid,
-          requesterName: user.displayName || user.email.split('@')[0],
-          driverId: ride.driverId,
-          driverName: ride.driverName,
-          pickup: ride.pickup,
-          dropoff: ride.dropoff,
-          time: ride.time
-        })
+        body: JSON.stringify(requestPayload)
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error);
-
-      toast.success(data.message || 'Request sent successfully!');
-      return true;
+      if (response.ok) {
+        let msg = 'Request sent successfully!';
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            msg = data.message || msg;
+          }
+        } catch (jsonErr) {}
+        toast.success(msg);
+        sent = true;
+      } else {
+        let errText = 'Failed to send request';
+        try {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            errText = data.error || errText;
+          }
+        } catch (jsonErr) {}
+        console.warn(`Backend API POST /requests returned status ${response.status}: ${errText}. Using Firestore client fallback.`);
+      }
     } catch (error) {
-      toast.error('Error: ' + error.message);
-      return false;
+      console.warn('Backend API request error:', error);
     }
+
+    if (!sent) {
+      try {
+        await addDoc(collection(db, 'ride_requests'), requestPayload);
+        toast.success('Request sent successfully!');
+        sent = true;
+      } catch (fsErr) {
+        console.error('Firestore request creation failed:', fsErr);
+        toast.error('Failed to send request: ' + fsErr.message);
+        return false;
+      }
+    }
+
+    return sent;
   };
 
   const handleOfferSubmit = async (e) => {
@@ -147,13 +183,16 @@ function Home({ user }) {
 
   // Filter rides based on search query
   const filteredRides = rides.filter(r => {
-    if (!fromLocation && !toLocation) return true;
-    const matchesFrom = fromLocation ? r.pickup?.toLowerCase().includes(fromLocation.toLowerCase()) || r.pickup?.toLowerCase().includes('pcu') || r.pickup?.toLowerCase().includes('university') : true;
-    const matchesTo = toLocation ? r.dropoff?.toLowerCase().includes(toLocation.toLowerCase()) || r.dropoff?.toLowerCase().includes('airport') || r.dropoff?.toLowerCase().includes('pune') : true;
-    return matchesFrom || matchesTo;
+    const fromQuery = fromLocation.trim().toLowerCase();
+    const toQuery = toLocation.trim().toLowerCase();
+    if (!fromQuery && !toQuery) return true;
+
+    const matchesFrom = fromQuery ? r.pickup?.toLowerCase().includes(fromQuery) : true;
+    const matchesTo = toQuery ? r.dropoff?.toLowerCase().includes(toQuery) : true;
+    return matchesFrom && matchesTo;
   });
 
-  const displayRides = filteredRides.length > 0 ? filteredRides : rides;
+  const displayRides = filteredRides;
 
   if (loading) {
     return <div className="mt-20 text-center text-[#1683F8] font-bold">Loading available rides...</div>;
